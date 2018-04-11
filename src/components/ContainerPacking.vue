@@ -1,39 +1,58 @@
 <template>
   <div>
     <el-row>
+      <el-col :span="12">
         <canvas ref="myCanvas" width="700" height="300" style="border:1px solid #aa22ff ;">
           Your browser does not support the HTML5 canvas tag.
         </canvas>
-    </el-row>
-    <el-row>
-      <el-transfer
+      </el-col>
+      <el-col :span="12">
+        <el-transfer
         v-model="value2"
-        :data="data">
-      </el-transfer>
+        :data="data"
+        :titles="titles">
+        </el-transfer>
+      </el-col>
     </el-row>
   </div>
 </template>
 
 <script>
+import axios from 'axios'
 export default {
   name: 'HelloWorld',
   data () {
     return {
-      data: [
-        {
-          key: 'A',
-          label: `Option A`
-        },
-        {
-          key: 'B',
-          label: `Option B`
-        }
-      ],
-      value2: ['A']
+      data: [],
+      boxes: [],
+      value2: [],
+      titles: ['Boxes', 'Selected Boxes']
     }
   },
   methods: {
     // Function to filter units
+    getBoxes () {
+      // Make a request for a user with a given ID
+      axios.get('http://52.157.147.48:80/PackingAPI/api/v1/GetBoxes')
+        .then((response) => {
+          this.boxes = response.data
+          this.generateData()
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    },
+    generateData () {
+      this.boxes.forEach((box) => {
+        this.data.push({
+          key: box.ID,
+          label: `${box.ID}, ${box.Width}, ${box.Height}`
+        })
+      })
+    }
+  },
+  created () {
+    this.getBoxes()
   },
   mounted () {
     var c = this.$refs.myCanvas
