@@ -1,7 +1,17 @@
 <template>
-  <canvas ref="myCanvas" width="700" height="300" style="border:1px solid #aa22ff ;">
-    Your browser does not support the HTML5 canvas tag.
-  </canvas>
+  <div>
+    <el-row>
+        <canvas ref="myCanvas" width="700" height="300" style="border:1px solid #aa22ff ;">
+          Your browser does not support the HTML5 canvas tag.
+        </canvas>
+    </el-row>
+    <el-row>
+      <el-transfer
+        v-model="value2"
+        :data="data">
+      </el-transfer>
+    </el-row>
+  </div>
 </template>
 
 <script>
@@ -9,13 +19,21 @@ export default {
   name: 'HelloWorld',
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App'
+      data: [
+        {
+          key: 'A',
+          label: `Option A`
+        },
+        {
+          key: 'B',
+          label: `Option B`
+        }
+      ],
+      value2: ['A']
     }
   },
   methods: {
     // Function to filter units
-    getUnits: function () {
-    }
   },
   mounted () {
     var c = this.$refs.myCanvas
@@ -114,18 +132,24 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h1, h2 {
-  font-weight: normal;
+.el-row {
+  margin-bottom: 20px;
 }
-ul {
-  list-style-type: none;
-  padding: 0;
+.bg-purple-dark {
+  background: #99a9bf;
 }
-li {
-  display: inline-block;
-  margin: 0 10px;
+.bg-purple {
+  background: #d3dce6;
 }
-a {
-  color: #42b983;
+.bg-purple-light {
+  background: #e5e9f2;
+}
+.grid-content {
+  border-radius: 4px;
+  min-height: 36px;
+}
+.row-bg {
+  padding: 10px 0;
+  background-color: #f9fafc;
 }
 </style>
