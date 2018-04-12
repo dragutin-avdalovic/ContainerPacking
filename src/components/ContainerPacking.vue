@@ -1,17 +1,23 @@
 <template>
   <div>
     <el-row>
-      <el-col :span="12">
+      <el-col class="row-bg-center" :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
         <canvas ref="myCanvas" width="700" height="300" style="border:1px solid #aa22ff ;">
           Your browser does not support the HTML5 canvas tag.
         </canvas>
       </el-col>
-      <el-col :span="12">
-        <el-transfer
-        v-model="value2"
-        :data="data"
-        :titles="titles">
-        </el-transfer>
+      <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
+        <el-col class="row-bg-center" :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+          <el-transfer
+          v-model="value2"
+          :data="data"
+          :titles="titles">
+          </el-transfer>
+        </el-col>
+        <el-col class="row-bg-center" :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+          <el-button type="danger">Clear selection</el-button>
+          <el-button type="primary">Fill the container</el-button>
+        </el-col>
       </el-col>
     </el-row>
   </div>
@@ -151,24 +157,14 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.el-row {
-  margin-bottom: 20px;
-}
-.bg-purple-dark {
-  background: #99a9bf;
-}
-.bg-purple {
-  background: #d3dce6;
-}
-.bg-purple-light {
-  background: #e5e9f2;
-}
 .grid-content {
-  border-radius: 4px;
   min-height: 36px;
 }
-.row-bg {
+.row-bg-center {
   padding: 10px 0;
   background-color: #f9fafc;
+  display: flex;
+  justify-content: center;
 }
+
 </style>
