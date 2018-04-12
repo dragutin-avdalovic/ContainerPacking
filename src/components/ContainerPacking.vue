@@ -1,12 +1,12 @@
 <template>
   <div>
     <el-row>
-      <el-col class="row-bg-center" :xs="24" :sm="24" :md="24" :lg="16" :xl="16">
+      <el-col class="row-bg-center" :xs="24" :sm="24" :md="24" :lg="14" :xl="14">
         <canvas ref="myCanvas" width="100" height="100" style="border:1px solid red ;">
           Your browser does not support the HTML5 canvas tag.
         </canvas>
       </el-col>
-      <el-col :xs="24" :sm="24" :md="24" :lg="8" :xl="8">
+      <el-col :xs="24" :sm="24" :md="24" :lg="10" :xl="10">
         <el-col class="row-bg-center" :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
           <el-transfer
           v-model="value"
