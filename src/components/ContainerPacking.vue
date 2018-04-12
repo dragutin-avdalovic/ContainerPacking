@@ -15,7 +15,7 @@
           </el-transfer>
         </el-col>
         <el-col class="row-bg-center" :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
-          <el-button type="danger">Clear selection</el-button>
+          <el-button type="danger" v-on:click="clearSelection">Clear selection</el-button>
           <el-button type="primary" v-on:click="fillContainer">Fill the container</el-button>
         </el-col>
       </el-col>
@@ -71,6 +71,10 @@ export default {
       }).catch(function (error) {
         console.log(error)
       })
+    },
+    clearSelection () {
+      this.value = []
+      console.log(this.value)
     }
   },
   created () {
