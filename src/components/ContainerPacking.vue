@@ -2,7 +2,7 @@
   <div>
     <el-row>
       <el-col class="row-bg-center" :xs="24" :sm="24" :md="24" :lg="16" :xl="16">
-        <canvas ref="myCanvas" width="800" height="400" style="border:1px solid red ;">
+        <canvas ref="myCanvas" width="100" height="100" style="border:1px solid red ;">
           Your browser does not support the HTML5 canvas tag.
         </canvas>
       </el-col>
@@ -32,6 +32,7 @@ export default {
     return {
       data: [],
       boxes: [],
+      containers: [],
       containerBoxes: [],
       value: [],
       containerData: {},
@@ -41,6 +42,16 @@ export default {
   },
   methods: {
     // Function to filter units
+    getContainers () {
+      axios.get('http://52.157.147.48:80/PackingAPI/api/v1/GetContainers').then((response) => {
+        console.log(response.data)
+        this.containers = response.data
+        this.$refs.myCanvas.width = this.containers[1].Width
+        this.$refs.myCanvas.height = this.containers[1].Height
+      }).catch(function (error) {
+        console.log(error)
+      })
+    },
     getBoxes () {
       // Make a request for a user with a given ID
       axios.get('http://52.157.147.48:80/PackingAPI/api/v1/GetBoxes')
@@ -71,27 +82,49 @@ export default {
       })
     },
     fillContainer (type) {
-      console.log(this.containerBoxes)
-      console.log(this.value)
       this.containerBoxes = []
       this.value.forEach((value) => {
         this.containerBoxes.push({BoxID: value, Rotated: false})
       })
-      console.log(this.containerBoxes)
-      axios.post('http://52.157.147.48:80/PackingAPI/api/v1/' + type, {
-        ContainerID: '1',
+
+      let obj = {
         Boxes: this.containerBoxes
-      }).then((response) => {
-        Object.assign(this.containerData, response.data)
-        this.containerData.PackedBoxes.map(el => {
-          Object.defineProperty(el, 'selected', {
-            enumerable: true,
-            configurable: true,
-            writable: true,
-            value: false
-          })
-          return el
+      }
+      if (type !== 'FillContainer') {
+        Object.defineProperty(obj, 'Rotation', {
+          enumerable: true,
+          configurable: true,
+          writable: true,
+          value: true
         })
+        Object.defineProperty(obj, 'ContainerIDs', {
+          enumerable: true,
+          configurable: true,
+          writable: true,
+          value: ['1']
+        })
+      } else {
+        Object.defineProperty(obj, 'ContainerID', {
+          enumerable: true,
+          configurable: true,
+          writable: true,
+          value: '1'
+        })
+      }
+      console.log(obj)
+      axios.post('http://52.157.147.48:80/PackingAPI/api/v1/' + type, obj).then((response) => {
+        Object.assign(this.containerData, response.data)
+        if (this.containerData.PackedBoxes) {
+          this.containerData.PackedBoxes.map(el => {
+            Object.defineProperty(el, 'selected', {
+              enumerable: true,
+              configurable: true,
+              writable: true,
+              value: false
+            })
+            return el
+          })
+        }
         console.log(this.containerData)
         this.createCustomBoxes(this.containerData.PackedBoxes, this.context)
       }).catch(function (error) {
@@ -105,76 +138,12 @@ export default {
   },
   created () {
     this.getBoxes()
+    this.getContainers()
   },
   mounted () {
     var c = this.$refs.myCanvas
     var ctx = c.getContext('2d')
     this.context = ctx
-    var arr = [
-      {
-        X: 0,
-        Y: 0,
-        W: 150,
-        H: 100
-      },
-      {
-        X: 150,
-        Y: 0,
-        W: 60,
-        H: 100
-      },
-      {
-        X: 0,
-        Y: 100,
-        W: 60,
-        H: 100
-      },
-      {
-        X: 150,
-        Y: 100,
-        W: 60,
-        H: 100
-      },
-      {
-        X: 60,
-        Y: 100,
-        W: 60,
-        H: 50
-      },
-      {
-        X: 60,
-        Y: 150,
-        W: 60,
-        H: 50
-      },
-      {
-        X: 120,
-        Y: 100,
-        W: 30,
-        H: 70
-      }
-    ]
-
-    arr.map(el => {
-      Object.defineProperty(el, 'selected', {
-        enumerable: true,
-        configurable: true,
-        writable: true,
-        value: false
-      })
-      return el
-    })
-
-    //    function createBoxes () {
-    //      arr.forEach(el => {
-    //        ctx.strokeStyle = '#000000'
-    //        if (el.selected) {
-    //          ctx.strokeStyle = '#FF0000'
-    //        }
-    //        ctx.strokeRect(el.X, el.Y, el.W, el.H)
-    //      })
-    //      ctx.stroke()
-    //    }
 
     function getMousePos (canvas, evt) {
       var rect = c.getBoundingClientRect()
@@ -187,13 +156,6 @@ export default {
     c.addEventListener('click', function (evt) {
       var mousePos = getMousePos(c, evt)
       console.log(mousePos.x, mousePos.y)
-      arr.map(el => {
-        el.selected = false
-        if ((mousePos.x > el.X && mousePos.x < (el.X + el.W)) && (mousePos.y > el.Y && mousePos.y < (el.Y + el.H))) {
-          el.selected = true
-        }
-        return el
-      })
       //      this.createCustomBoxes(this.containerData.PackedBoxes, this.context)
     }, false)
     //    this.createCustomBoxes(this.containerData.PackedBoxes, this.context)
