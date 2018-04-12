@@ -1,22 +1,22 @@
 <template>
   <div>
     <el-row>
-      <el-col class="row-bg-center" :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
+      <el-col class="row-bg-center" :xs="24" :sm="24" :md="24" :lg="12" :xl="12">
         <canvas ref="myCanvas" width="700" height="300" style="border:1px solid #aa22ff ;">
           Your browser does not support the HTML5 canvas tag.
         </canvas>
       </el-col>
-      <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
+      <el-col :xs="24" :sm="24" :md="24" :lg="12" :xl="12">
         <el-col class="row-bg-center" :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
           <el-transfer
-          v-model="value2"
+          v-model="value"
           :data="data"
           :titles="titles">
           </el-transfer>
         </el-col>
         <el-col class="row-bg-center" :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
           <el-button type="danger">Clear selection</el-button>
-          <el-button type="primary">Fill the container</el-button>
+          <el-button type="primary" v-on:click="fillContainer">Fill the container</el-button>
         </el-col>
       </el-col>
     </el-row>
@@ -31,7 +31,7 @@ export default {
     return {
       data: [],
       boxes: [],
-      value2: [],
+      value: [],
       titles: ['Boxes', 'Selected Boxes']
     }
   },
@@ -54,6 +54,22 @@ export default {
           key: box.ID,
           label: `${box.ID}, ${box.Width}, ${box.Height}`
         })
+      })
+    },
+    fillContainer () {
+      console.log(this.value)
+      axios.post('http://52.157.147.48:80/PackingAPI/api/v1/FillContainer', {
+        ContainerID: '1',
+        Boxes: [
+          {
+            BoxID: 'D',
+            Rotated: true
+          }
+        ]
+      }).then(function (response) {
+        console.log(response)
+      }).catch(function (error) {
+        console.log(error)
       })
     }
   },
