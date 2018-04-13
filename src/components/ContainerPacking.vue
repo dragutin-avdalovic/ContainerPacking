@@ -9,7 +9,7 @@
       <el-col :xs="24" :sm="24" :md="24" :lg="10" :xl="10">
         <el-col class="row-bg-center" :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
           <span class="chooseContainer">Choose container:</span>
-          <el-select v-on:change="drawContainer()" v-model="container" placeholder="Select">
+          <el-select v-on:change="drawContainer()" v-model="container" placeholder="Select container">
             <el-option
               v-for="item in containers"
               :key="item.ID"
@@ -51,7 +51,7 @@ export default {
       containerData: {},
       titles: ['Boxes', 'Selected Boxes'],
       context: null,
-      container: ''
+      container: '0'
     }
   },
   methods: {
@@ -59,8 +59,8 @@ export default {
       axios.get('http://52.157.147.48:80/PackingAPI/api/v1/GetContainers').then((response) => {
         console.log(response.data)
         this.containers = response.data
-        this.$refs.myCanvas.width = this.containers[0].Width
-        this.$refs.myCanvas.height = this.containers[0].Height
+        this.$refs.myCanvas.width = this.containers[this.container].Width
+        this.$refs.myCanvas.height = this.containers[this.container].Height
         this.context.font = '15px Arial'
         this.context.fillStyle = 'red'
         this.context.fillText(this.$refs.myCanvas.height, 20, this.$refs.myCanvas.height / 2)
@@ -135,22 +135,18 @@ export default {
       }
       console.log(obj)
       axios.post('http://52.157.147.48:80/PackingAPI/api/v1/' + type, obj).then((response) => {
-        console.log(response.data)
-        this.containerData = JSON.parse(JSON.stringify(response.data))
-        var newObj = {}
-        Object.assign(newObj, response.data)
-        console.log(newObj)
-        newObj.PackedBoxes.map(el => {
-          Object.defineProperty(el, 'selected', {
+        this.containerData = response.data
+
+        this.containerData[0].PackedBoxes.map(box => {
+          Object.defineProperty(box, 'selected', {
             enumerable: true,
             configurable: true,
             writable: true,
             value: false
           })
-          return el
+          return box
         })
-        console.log(newObj.PackedBoxes)
-        this.createCustomBoxes(this.containerData.PackedBoxes, this.context)
+        this.createCustomBoxes(this.containerData[0].PackedBoxes, this.context)
       }).catch(function (error) {
         console.log(error)
       })
