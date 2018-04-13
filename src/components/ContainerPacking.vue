@@ -8,6 +8,19 @@
       </el-col>
       <el-col :xs="24" :sm="24" :md="24" :lg="10" :xl="10">
         <el-col class="row-bg-center" :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+          <span class="chooseContainer">Choose container:</span>
+          <el-select v-model="container" placeholder="Select">
+            <el-option
+              v-for="item in containers"
+              :key="item.ID"
+              :value="item.ID"
+            >
+              <span style="float: left; color: #0000ff">{{ item.ID }}</span>
+              <span style="float: right; color: #ff0000; font-size: 13px">W: {{ item.Width }}, H: {{ item.Height }}, T: {{  item.Type}}</span>
+            </el-option>
+          </el-select>
+        </el-col>
+        <el-col class="row-bg-center" :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
           <el-transfer
           v-model="value"
           :data="data"
@@ -37,7 +50,8 @@ export default {
       value: [],
       containerData: {},
       titles: ['Boxes', 'Selected Boxes'],
-      context: null
+      context: null,
+      container: ''
     }
   },
   methods: {
@@ -73,9 +87,11 @@ export default {
           context.strokeStyle = '#FF0000'
         }
         context.strokeRect(el.X, el.Y, el.W, el.H)
-        context.font = '20px Arial'
+        context.font = '15px Ari  al'
         context.fillStyle = 'blue'
         context.fillText(el.ID, el.X + el.W / 2, el.Y + el.H / 2)
+        context.fillText(el.H, el.X, el.Y + el.H / 2)
+        context.fillText(el.W, el.X + el.W / 2 - 15, el.Y + 15)
       })
       context.stroke()
     },
@@ -119,19 +135,21 @@ export default {
       }
       console.log(obj)
       axios.post('http://52.157.147.48:80/PackingAPI/api/v1/' + type, obj).then((response) => {
-        Object.assign(this.containerData, response.data)
-        if (this.containerData.PackedBoxes) {
-          this.containerData.PackedBoxes.map(el => {
-            Object.defineProperty(el, 'selected', {
-              enumerable: true,
-              configurable: true,
-              writable: true,
-              value: false
-            })
-            return el
+        console.log(response.data)
+        this.containerData = JSON.parse(JSON.stringify(response.data))
+        var newObj = {}
+        Object.assign(newObj, response.data)
+        console.log(newObj)
+        newObj.PackedBoxes.map(el => {
+          Object.defineProperty(el, 'selected', {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: false
           })
-        }
-        console.log(this.containerData.PackedBoxes)
+          return el
+        })
+        console.log(newObj.PackedBoxes)
         this.createCustomBoxes(this.containerData.PackedBoxes, this.context)
       }).catch(function (error) {
         console.log(error)
@@ -176,7 +194,14 @@ export default {
 .row-bg-center {
   display: flex;
   justify-content: center;
+  align-items: center;
   padding: 10px 0;
+}
+.chooseContainer
+{
+  font-size: 1em;
+  color: orangered;
+  padding-right: 2em;
 }
 
 </style>
