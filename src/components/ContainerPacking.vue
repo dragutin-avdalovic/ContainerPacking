@@ -48,19 +48,40 @@ export default {
       containers: [],
       containerBoxes: [],
       value: [],
-      containerData: {},
+      containerData: [],
       titles: ['Boxes', 'Selected Boxes'],
       context: null,
-      container: '0'
+      container: '',
+      canvas: null
     }
   },
   methods: {
+    getMousePos (evt) {
+      var rect = this.canvas.getBoundingClientRect()
+      return {
+        x: evt.clientX - rect.left,
+        y: evt.clientY - rect.top
+      }
+    },
+    addMouseEvent () {
+      this.canvas.addEventListener('click', (evt) => {
+        let mousePos = this.getMousePos(evt)
+        this.containerData[0].PackedBoxes.map(el => {
+          el.selected = false
+          if ((mousePos.x > el.X && mousePos.x < (el.X + el.W)) && (mousePos.y > el.Y && mousePos.y < (el.Y + el.H))) {
+            el.selected = true
+          }
+          return el
+        })
+        this.createCustomBoxes(this.containerData[0].PackedBoxes, this.context)
+      }, false)
+    },
     getContainers () {
       axios.get('http://52.157.147.48:80/PackingAPI/api/v1/GetContainers').then((response) => {
         console.log(response.data)
         this.containers = response.data
-        this.$refs.myCanvas.width = this.containers[this.container].Width
-        this.$refs.myCanvas.height = this.containers[this.container].Height
+        this.$refs.myCanvas.width = this.containers[0].Width
+        this.$refs.myCanvas.height = this.containers[0].Height
         this.context.font = '15px Arial'
         this.context.fillStyle = 'red'
         this.context.fillText(this.$refs.myCanvas.height, 20, this.$refs.myCanvas.height / 2)
@@ -173,21 +194,8 @@ export default {
     var c = this.$refs.myCanvas
     var ctx = c.getContext('2d')
     this.context = ctx
-
-    function getMousePos (canvas, evt) {
-      var rect = c.getBoundingClientRect()
-      return {
-        x: evt.clientX - rect.left,
-        y: evt.clientY - rect.top
-      }
-    }
-
-    c.addEventListener('click', function (evt) {
-      var mousePos = getMousePos(c, evt)
-      console.log(mousePos.x, mousePos.y)
-      //      this.createCustomBoxes(this.containerData.PackedBoxes, this.context)
-    }, false)
-    //    this.createCustomBoxes(this.containerData.PackedBoxes, this.context)
+    this.canvas = c
+    this.addMouseEvent()
   }
 }
 </script>
