@@ -9,11 +9,11 @@
       <el-col :xs="24" :sm="24" :md="24" :lg="10" :xl="10">
         <el-col class="row-bg-center" :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
           <span class="chooseContainer">Choose container:</span>
-          <el-select v-model="container" placeholder="Select">
+          <el-select v-on:change="drawContainer()" v-model="container" placeholder="Select">
             <el-option
               v-for="item in containers"
               :key="item.ID"
-              :value="item.ID"
+              :value="item.Type"
             >
               <span style="float: left; color: #0000ff">{{ item.ID }}</span>
               <span style="float: right; color: #ff0000; font-size: 13px">W: {{ item.Width }}, H: {{ item.Height }}, T: {{  item.Type}}</span>
@@ -158,6 +158,15 @@ export default {
     clearSelection () {
       this.value = []
       this.context.clearRect(0, 0, this.$refs.myCanvas.width, this.$refs.myCanvas.height)
+    },
+    drawContainer () {
+      console.log(this.container)
+      this.$refs.myCanvas.width = this.containers[this.container].Width
+      this.$refs.myCanvas.height = this.containers[this.container].Height
+      this.context.font = '15px Arial'
+      this.context.fillStyle = 'red'
+      this.context.fillText(this.$refs.myCanvas.height, 20, this.$refs.myCanvas.height / 2)
+      this.context.fillText(this.$refs.myCanvas.width, this.$refs.myCanvas.width / 2, 20)
     }
   },
   created () {
