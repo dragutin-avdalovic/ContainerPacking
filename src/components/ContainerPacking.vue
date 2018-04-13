@@ -41,7 +41,6 @@ export default {
     }
   },
   methods: {
-    // Function to filter units
     getContainers () {
       axios.get('http://52.157.147.48:80/PackingAPI/api/v1/GetContainers').then((response) => {
         console.log(response.data)
@@ -162,7 +161,6 @@ export default {
   }
 }
 </script>
-
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
 .grid-content {
