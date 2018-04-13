@@ -45,8 +45,12 @@ export default {
       axios.get('http://52.157.147.48:80/PackingAPI/api/v1/GetContainers').then((response) => {
         console.log(response.data)
         this.containers = response.data
-        this.$refs.myCanvas.width = this.containers[1].Width
-        this.$refs.myCanvas.height = this.containers[1].Height
+        this.$refs.myCanvas.width = this.containers[0].Width
+        this.$refs.myCanvas.height = this.containers[0].Height
+        this.context.font = '15px Arial'
+        this.context.fillStyle = 'red'
+        this.context.fillText(this.$refs.myCanvas.height, 20, this.$refs.myCanvas.height / 2)
+        this.context.fillText(this.$refs.myCanvas.width, this.$refs.myCanvas.width / 2, 20)
       }).catch(function (error) {
         console.log(error)
       })
@@ -69,6 +73,9 @@ export default {
           context.strokeStyle = '#FF0000'
         }
         context.strokeRect(el.X, el.Y, el.W, el.H)
+        context.font = '20px Arial'
+        context.fillStyle = 'blue'
+        context.fillText(el.ID, el.X + el.W / 2, el.Y + el.H / 2)
       })
       context.stroke()
     },
@@ -124,7 +131,7 @@ export default {
             return el
           })
         }
-        console.log(this.containerData)
+        console.log(this.containerData.PackedBoxes)
         this.createCustomBoxes(this.containerData.PackedBoxes, this.context)
       }).catch(function (error) {
         console.log(error)
