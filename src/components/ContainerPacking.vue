@@ -9,7 +9,7 @@
       <el-col :xs="24" :sm="24" :md="24" :lg="10" :xl="10">
         <el-col class="row-bg-center" :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
           <span class="chooseContainer">Choose container:</span>
-          <el-select v-on:change="drawContainer()" v-model="container" placeholder="Select container">
+          <el-select style="float: right;" v-on:change="drawContainer()" v-model="container" placeholder="Select container">
             <el-option
               v-for="item in containers"
               :key="item.ID"
@@ -22,7 +22,7 @@
         </el-col>
         <el-col class="row-bg-center" :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
           <span class="chooseContainer">Shiping type: </span>
-          <el-select v-model="shipping" placeholder="Select container">
+          <el-select style="float: right;" v-model="shipping" placeholder="Select container">
             <el-option
               v-for="(item, index) in shippingTitles"
               :key="index"
@@ -66,7 +66,7 @@ export default {
       container: '',
       canvas: null,
       shipping: '',
-      shippingTitles: ['By Sea', 'By Truck', 'By Plane']
+      shippingTitles: ['By Sea', 'By Truck', 'By Plane', 'Articulated vehicle']
     }
   },
   methods: {
