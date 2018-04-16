@@ -22,7 +22,7 @@
         </el-col>
         <el-col class="row-bg-center" :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
           <span class="chooseContainer">Shiping type: </span>
-          <el-select style="float: right;" v-model="shipping" placeholder="Select container">
+          <el-select style="float: right;" v-model="shipping" placeholder="Shiping type">
             <el-option
               v-for="(item, index) in shippingTitles"
               :key="index"
