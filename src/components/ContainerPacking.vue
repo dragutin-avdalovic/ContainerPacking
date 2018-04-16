@@ -21,6 +21,18 @@
           </el-select>
         </el-col>
         <el-col class="row-bg-center" :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+          <span class="chooseContainer">Shiping type: </span>
+          <el-select v-model="shipping" placeholder="Select container">
+            <el-option
+              v-for="(item, index) in shippingTitles"
+              :key="index"
+              :value="item"
+            >
+              <span style="float: left; color: #0000ff">{{item}}</span>
+            </el-option>
+          </el-select>
+        </el-col>
+        <el-col class="row-bg-center" :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
           <el-transfer
           v-model="value"
           :data="data"
@@ -52,7 +64,9 @@ export default {
       titles: ['Boxes', 'Selected Boxes'],
       context: null,
       container: '',
-      canvas: null
+      canvas: null,
+      shipping: '',
+      shippingTitles: ['By Sea', 'By Truck', 'By Plane']
     }
   },
   methods: {
@@ -109,7 +123,7 @@ export default {
           context.strokeStyle = '#FF0000'
         }
         context.strokeRect(el.X, el.Y, el.W, el.H)
-        context.font = '15px Ari  al'
+        context.font = '15px Arial'
         context.fillStyle = 'blue'
         context.fillText(el.ID, el.X + el.W / 2, el.Y + el.H / 2)
         context.fillText(el.H, el.X, el.Y + el.H / 2)
