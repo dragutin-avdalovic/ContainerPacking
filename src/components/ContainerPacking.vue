@@ -102,6 +102,7 @@ export default {
         })
     },
     createCustomBoxes (boxArray, context) {
+      this.context.clearRect(0, 0, this.$refs.myCanvas.width, this.$refs.myCanvas.height)
       boxArray.forEach(el => {
         context.strokeStyle = '#000000'
         if (el.selected) {
