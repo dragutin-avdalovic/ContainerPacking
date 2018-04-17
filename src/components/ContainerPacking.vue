@@ -75,7 +75,7 @@ export default {
       containerData: [],
       titles: ['Boxes', 'Selected Boxes'],
       context: null,
-      container: '',
+      container: '1',
       canvas: null,
       shipping: '',
       shippingTitles: ['By Sea', 'By Truck', 'By Plane', 'Articulated vehicle']
@@ -175,14 +175,14 @@ export default {
           enumerable: true,
           configurable: true,
           writable: true,
-          value: ['1']
+          value: [parseInt(this.container) + 1]
         })
       } else {
         Object.defineProperty(obj, 'ContainerID', {
           enumerable: true,
           configurable: true,
           writable: true,
-          value: '1'
+          value: parseInt(this.container) + 1
         })
       }
       console.log(obj)
@@ -230,7 +230,7 @@ export default {
     var ctx = c.getContext('2d')
     this.context = ctx
     this.canvas = c
-//    this.addMouseEvent()
+    //    this.addMouseEvent()
   }
 }
 </script>
@@ -255,7 +255,7 @@ export default {
 {
   font-size: 1em;
   color: green;
-  padding-right: 1em;
+  padding-right: 0.5em;
 }
 
 </style>
