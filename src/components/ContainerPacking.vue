@@ -7,6 +7,30 @@
         </canvas>
       </el-col>
       <el-col :xs="24" :sm="24" :md="24" :lg="10" :xl="10">
+        <el-col class="row-bg-center" :xs="12" :sm="12" :md="12" :lg="12" :xl="12">
+          <span class="chooseType">Shiping type: </span>
+          <el-select style="float: right;" v-model="shipping" placeholder="Shiping type">
+            <el-option
+              v-for="(item, index) in shippingTitles"
+              :key="index"
+              :value="item"
+            >
+              <span style="float: left; color: #0000ff">{{item}}</span>
+            </el-option>
+          </el-select>
+        </el-col>
+        <el-col class="row-bg-center" :xs="12" :sm="12" :md="12" :lg="12" :xl="12">
+          <span class="chooseType">Filename: </span>
+          <el-select style="float: right;" v-model="shipping" placeholder="Shiping type">
+            <el-option
+              v-for="(item, index) in shippingTitles"
+              :key="index"
+              :value="item"
+            >
+              <span style="float: left; color: #0000ff">{{item}}</span>
+            </el-option>
+          </el-select>
+        </el-col>
         <el-col class="row-bg-center" :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
           <span class="chooseContainer">Choose container:</span>
           <el-select style="float: right;" v-on:change="drawContainer()" v-model="container" placeholder="Select container">
@@ -17,18 +41,6 @@
             >
               <span style="float: left; color: #0000ff">{{ item.ID }}</span>
               <span style="float: right; color: #ff0000; font-size: 13px">W: {{ item.Width }}, H: {{ item.Height }}, T: {{  item.Type}}</span>
-            </el-option>
-          </el-select>
-        </el-col>
-        <el-col class="row-bg-center" :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
-          <span class="chooseContainer">Shiping type: </span>
-          <el-select style="float: right;" v-model="shipping" placeholder="Shiping type">
-            <el-option
-              v-for="(item, index) in shippingTitles"
-              :key="index"
-              :value="item"
-            >
-              <span style="float: left; color: #0000ff">{{item}}</span>
             </el-option>
           </el-select>
         </el-col>
@@ -229,7 +241,13 @@ export default {
 {
   font-size: 1em;
   color: orangered;
-  padding-right: 2em;
+  padding-right: 1em;
+}
+.chooseType
+{
+  font-size: 1em;
+  color: green;
+  padding-right: 1em;
 }
 
 </style>
