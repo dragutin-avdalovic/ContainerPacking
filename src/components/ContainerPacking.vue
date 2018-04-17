@@ -35,9 +35,9 @@
           <span class="chooseContainer">Choose container:</span>
           <el-select style="float: right;" v-on:change="drawContainer()" v-model="container" placeholder="Select container">
             <el-option
-              v-for="item in containers"
+              v-for="(item, index) in containers"
               :key="item.ID"
-              :value="item.Type"
+              :value="index"
             >
               <span style="float: left; color: #0000ff">{{ item.ID }}</span>
               <span style="float: right; color: #ff0000; font-size: 13px">W: {{ item.Width }}, H: {{ item.Height }}, T: {{  item.Type}}</span>
@@ -105,7 +105,11 @@ export default {
     getContainers () {
       axios.get('http://52.157.147.48:80/PackingAPI/api/v1/GetContainers').then((response) => {
         console.log(response.data)
-        this.containers = response.data
+        this.containers = response.data.map(container => {
+          container.Width /= 10
+          container.Height /= 10
+          return container
+        })
         this.$refs.myCanvas.width = this.containers[0].Width
         this.$refs.myCanvas.height = this.containers[0].Height
         this.context.font = '15px Arial'
@@ -192,6 +196,10 @@ export default {
             writable: true,
             value: false
           })
+          box.W /= 10
+          box.H /= 10
+          box.X /= 10
+          box.Y /= 10
           return box
         })
         this.createCustomBoxes(this.containerData[0].PackedBoxes, this.context)
@@ -222,7 +230,7 @@ export default {
     var ctx = c.getContext('2d')
     this.context = ctx
     this.canvas = c
-    this.addMouseEvent()
+//    this.addMouseEvent()
   }
 }
 </script>
@@ -240,7 +248,7 @@ export default {
 .chooseContainer
 {
   font-size: 1em;
-  color: orangered;
+  color: dodgerblue;
   padding-right: 1em;
 }
 .chooseType
