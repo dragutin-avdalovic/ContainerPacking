@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="main">
     <el-row>
       <el-col class="row-bg-center" :xs="24" :sm="24" :md="24" :lg="14" :xl="14">
         <canvas ref="myCanvas" width="100" height="100" style="border:1px solid red ;">
@@ -9,9 +9,21 @@
       <el-col :xs="24" :sm="24" :md="24" :lg="10" :xl="10">
         <el-col class="row-bg-center" :xs="12" :sm="12" :md="12" :lg="12" :xl="12">
           <span class="chooseType">Shiping type: </span>
-          <el-select style="float: right;" v-model="shipping" placeholder="Shiping type">
+          <el-select style="float: right;" v-model="shipping" v-on:change="convertType()" placeholder="Shiping type">
             <el-option
               v-for="(item, index) in shippingTitles"
+              :key="index"
+              :value="index"
+            >
+              <span style="float: left; color: #0000ff">{{item}}</span>
+            </el-option>
+          </el-select>
+        </el-col>
+        <el-col class="row-bg-center" :xs="12" :sm="12" :md="12" :lg="12" :xl="12">
+          <span class="chooseType">File name: </span>
+          <el-select style="float: right;" v-model="filename" placeholder="File name">
+            <el-option
+              v-for="(item, index) in filenames"
               :key="index"
               :value="item"
             >
@@ -19,17 +31,8 @@
             </el-option>
           </el-select>
         </el-col>
-        <el-col class="row-bg-center" :xs="12" :sm="12" :md="12" :lg="12" :xl="12">
-          <span class="chooseType">Filename: </span>
-          <el-select style="float: right;" v-model="shipping" placeholder="Shiping type">
-            <el-option
-              v-for="(item, index) in shippingTitles"
-              :key="index"
-              :value="item"
-            >
-              <span style="float: left; color: #0000ff">{{item}}</span>
-            </el-option>
-          </el-select>
+        <el-col class="row-bg-center" :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+          <el-button type="warning" v-on:click="getBoxesAndContainers(type, filename)">Get new data</el-button>
         </el-col>
         <el-col class="row-bg-center" :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
           <span class="chooseContainer">Choose container:</span>
@@ -78,7 +81,10 @@ export default {
       container: '1',
       canvas: null,
       shipping: '',
-      shippingTitles: ['By Sea', 'By Truck', 'By Plane', 'Articulated vehicle']
+      type: null,
+      shippingTitles: ['By Sea', 'By Truck', 'By Plane', 'Articulated vehicle'],
+      filename: '',
+      filenames: ['PALLETS3.xls']
     }
   },
   methods: {
@@ -131,6 +137,27 @@ export default {
           console.log(error)
         })
     },
+    getBoxesAndContainers (type, filename) {
+      axios.post('http://52.157.147.48:80/PackingAPI/api/v1/GetBoxesAndContainers?fileName=' + filename + '&typeofcont=' + type).then((response) => {
+        console.log(response.data)
+        this.boxes = response.data['availableBoxes']
+        this.generateData()
+        this.containers = response.data['availableContainers']
+        this.containers = this.containers.map(container => {
+          container.Width /= 10
+          container.Height /= 10
+          return container
+        })
+        this.$refs.myCanvas.width = this.containers[0].Width
+        this.$refs.myCanvas.height = this.containers[0].Height
+        this.context.font = '15px Arial'
+        this.context.fillStyle = 'red'
+        this.context.fillText(this.$refs.myCanvas.height, 20, this.$refs.myCanvas.height / 2)
+        this.context.fillText(this.$refs.myCanvas.width, this.$refs.myCanvas.width / 2, 20)
+      }).catch(function (error) {
+        console.log(error)
+      })
+    },
     createCustomBoxes (boxArray, context) {
       this.context.clearRect(0, 0, this.$refs.myCanvas.width, this.$refs.myCanvas.height)
       boxArray.forEach(el => {
@@ -148,6 +175,7 @@ export default {
       context.stroke()
     },
     generateData () {
+      this.data = []
       this.boxes.forEach((box) => {
         this.data.push({
           key: box.ID,
@@ -219,6 +247,9 @@ export default {
       this.context.fillStyle = 'red'
       this.context.fillText(this.$refs.myCanvas.height, 20, this.$refs.myCanvas.height / 2)
       this.context.fillText(this.$refs.myCanvas.width, this.$refs.myCanvas.width / 2, 20)
+    },
+    convertType () {
+      this.type = parseInt(this.shipping) + 1
     }
   },
   created () {
@@ -257,5 +288,10 @@ export default {
   color: green;
   padding-right: 0.5em;
 }
+  .main
+{
+    padding-top: 2em;
+    padding-bottom: 2em;
+  }
 
 </style>
