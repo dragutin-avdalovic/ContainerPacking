@@ -1,8 +1,8 @@
-<template>
+n<template>
   <div class="main">
     <el-row>
-      <el-col class="row-bg-center" :xs="24" :sm="24" :md="24" :lg="14" :xl="14">
-        <canvas ref="myCanvas" width="100" height="100" style="border:1px solid red ;">
+      <el-col class="row-bg-center" :xs="24" :sm="24" :md="24" :lg="14" :xl="14" v-for="(container, index) in containers" v-bind:key="index">
+        <canvas  :ref="'canvas' + index" width="10" height="10" style="border:1px solid red ;">
           Your browser does not support the HTML5 canvas tag.
         </canvas>
       </el-col>
@@ -253,14 +253,15 @@ export default {
     }
   },
   created () {
-    this.getBoxes()
+    // this.getBoxes()
     this.getContainers()
   },
   mounted () {
-    var c = this.$refs.myCanvas
-    var ctx = c.getContext('2d')
-    this.context = ctx
-    this.canvas = c
+    //var c = this.$refs.canvas0
+    //var ctx = c.getContext('2d')
+    //this.context = ctx
+    //this.canvas = c
+    console.log(this.$refs)
     //    this.addMouseEvent()
   }
 }
