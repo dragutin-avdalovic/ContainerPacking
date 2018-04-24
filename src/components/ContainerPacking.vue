@@ -36,7 +36,7 @@ n<template>
         </el-col>
         <el-col class="row-bg-center" :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
           <span class="chooseContainer">Choose container:</span>
-          <el-select style="float: right;" v-on:change="drawContainer()" v-model="container" placeholder="Select container">
+          <el-select style="float: right;" v-on:change="drawContainers()" v-model="container" placeholder="Select container">
             <el-option
               v-for="(item, index) in containers"
               :key="item.ID"
@@ -248,20 +248,38 @@ export default {
       this.context.fillText(this.$refs.myCanvas.height, 20, this.$refs.myCanvas.height / 2)
       this.context.fillText(this.$refs.myCanvas.width, this.$refs.myCanvas.width / 2, 20)
     },
+    drawContainers () {
+      console.log(this.$refs)
+      var index = ''
+      for (var key in this.$refs) {
+        if (this.$refs.hasOwnProperty(key)) {
+          console.log('usao')
+          console.log(key + ' ->' + this.$refs[key])
+          index = key.split('s')[1]
+          console.log(index)
+          this.$refs[key].width = this.containers[index].Width
+          this.$refs[key] = this.containers[index].Height
+          this.context.font = '15px Arial'
+          this.context.fillStyle = 'red'
+          this.context.fillText(this.$refs[key].height, 20, this.$refs[key].height / 2)
+          this.context.fillText(this.$refs[key].width, this.$refs[key].width / 2, 20)
+        }
+      }
+    },
     convertType () {
       this.type = parseInt(this.shipping) + 1
     }
   },
   created () {
     // this.getBoxes()
-    this.getContainers()
+    // this.getContainers()
   },
   mounted () {
-    //var c = this.$refs.canvas0
-    //var ctx = c.getContext('2d')
-    //this.context = ctx
-    //this.canvas = c
-    console.log(this.$refs)
+    // var c = this.$refs.canvas0
+    // var ctx = c.getContext('2d')
+    // this.context = ctx
+    // this.canvas = c
+    // console.log(this.$refs)
     //    this.addMouseEvent()
   }
 }
