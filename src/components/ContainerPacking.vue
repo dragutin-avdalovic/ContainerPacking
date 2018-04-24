@@ -84,7 +84,8 @@ export default {
       type: null,
       shippingTitles: ['By Sea', 'By Truck', 'By Plane', 'Articulated vehicle'],
       filename: '',
-      filenames: ['PALLETS3.xls']
+      filenames: ['PALLETS3.xls'],
+      contextArray: []
     }
   },
   methods: {
@@ -249,16 +250,32 @@ export default {
       this.context.fillText(this.$refs.myCanvas.width, this.$refs.myCanvas.width / 2, 20)
     },
     drawContainers () {
-      console.log(this.$refs)
       var index = ''
+      for (var item in this.$refs) {
+        if (this.$refs.hasOwnProperty(item)) {
+          this.contextArray.push(this.$refs[item])
+          // var ctx = c.getContext('2d')
+          // this.context = ctx
+          // this.canvas = c
+          // console.log(this.$refs)
+          //    this.addMouseEvent()
+        }
+      }
+      console.log(this.contextArray)
       for (var key in this.$refs) {
         if (this.$refs.hasOwnProperty(key)) {
-          console.log('usao')
+          console.log('usao' + this.contextArray)
           console.log(key + ' ->' + this.$refs[key])
           index = key.split('s')[1]
           console.log(index)
           this.$refs[key].width = this.containers[index].Width
-          this.$refs[key] = this.containers[index].Height
+          console.log('ref: ')
+          console.log(this.$refs[key])
+          this.$refs[key].height = this.containers[index].Height
+          console.log('ref: ')
+          console.log(this.$refs[key])
+          this.context = this.$refs[key].getContext('2d')
+          console.log(this.context)
           this.context.font = '15px Arial'
           this.context.fillStyle = 'red'
           this.context.fillText(this.$refs[key].height, 20, this.$refs[key].height / 2)
@@ -275,12 +292,7 @@ export default {
     // this.getContainers()
   },
   mounted () {
-    // var c = this.$refs.canvas0
-    // var ctx = c.getContext('2d')
-    // this.context = ctx
-    // this.canvas = c
-    // console.log(this.$refs)
-    //    this.addMouseEvent()
+
   }
 }
 </script>
