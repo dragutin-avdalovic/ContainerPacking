@@ -261,6 +261,7 @@ export default {
           //    this.addMouseEvent()
         }
       }
+
       console.log(this.contextArray)
       for (var key in this.$refs) {
         if (this.$refs.hasOwnProperty(key)) {
