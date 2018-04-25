@@ -2,7 +2,7 @@ n<template>
   <div class="main">
     <el-row>
       <el-col class="row-bg-center" :xs="24" :sm="24" :md="24" :lg="14" :xl="14" v-for="(container, index) in containers" v-bind:key="index">
-        <canvas  :ref="'canvas' + index" width="10" height="10" style="border:1px solid red ;">
+        <canvas :id="'canvas' + index" :ref="'canvas' + index" width="10" height="10" style="border:1px solid red ;">
           Your browser does not support the HTML5 canvas tag.
         </canvas>
       </el-col>
@@ -77,9 +77,9 @@ export default {
       value: [],
       containerData: [],
       titles: ['Boxes', 'Selected Boxes'],
+      canvas: null,
       context: null,
       container: '1',
-      canvas: null,
       shipping: '',
       type: null,
       shippingTitles: ['By Sea', 'By Truck', 'By Plane', 'Articulated vehicle'],
@@ -265,22 +265,17 @@ export default {
       console.log(this.contextArray)
       for (var key in this.$refs) {
         if (this.$refs.hasOwnProperty(key)) {
-          console.log('usao' + this.contextArray)
-          console.log(key + ' ->' + this.$refs[key])
           index = key.split('s')[1]
           console.log(index)
-          this.$refs[key].width = this.containers[index].Width
-          console.log('ref: ')
-          console.log(this.$refs[key])
-          this.$refs[key].height = this.containers[index].Height
-          console.log('ref: ')
-          console.log(this.$refs[key])
-          this.context = this.$refs[key].getContext('2d')
+          this.canvas = document.getElementById(key)
+          this.canvas.width = this.containers[index].Width
+          this.canvas.height = this.containers[index].Height
+          this.context = document.getElementById(key).getContext('2d')
           console.log(this.context)
           this.context.font = '15px Arial'
           this.context.fillStyle = 'red'
-          this.context.fillText(this.$refs[key].height, 20, this.$refs[key].height / 2)
-          this.context.fillText(this.$refs[key].width, this.$refs[key].width / 2, 20)
+          this.context.fillText(this.canvas.height, 20, this.canvas.height / 2)
+          this.context.fillText(this.canvas.width, this.canvas.width / 2, 20)
         }
       }
     },
