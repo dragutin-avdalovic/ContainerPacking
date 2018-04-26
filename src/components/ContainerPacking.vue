@@ -163,10 +163,10 @@ export default {
           indexOfCanvas = parseInt(key.split('s')[1]) + 1
           console.log('c-index ' + indexOfCanvas)
           if (String(indexOfCanvas) === oneContainerBoxArray.ContainerID) {
-            console.log('in')
             console.log('key ' + key)
             this.context = document.getElementById(key).getContext('2d')
-            console.log(this.context)
+            console.log(this.containers[indexOfCanvas])
+            this.context.clearRect(0, 0, this.containers[indexOfCanvas].Width, this.containers[indexOfCanvas].Height)
           }
         }
         oneContainerBoxArray.PackedBoxes.forEach(el => {
