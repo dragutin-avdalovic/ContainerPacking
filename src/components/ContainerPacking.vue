@@ -1,4 +1,4 @@
-n<template>
+<template>
   <div class="main">
     <el-row>
       <el-col class="row-bg-center" :xs="24" :sm="24" :md="24" :lg="14" :xl="14" v-for="(container, index) in containers" v-bind:key="index">
@@ -151,32 +151,41 @@ export default {
         })
         console.log(this.$refs)
         this.drawContainers()
-
-        //        this.$refs.myCanvas.width = this.containers[0].Width
-        //        this.$refs.myCanvas.height = this.containers[0].Height
-        //        this.context.font = '15px Arial'
-        //        this.context.fillStyle = 'red'
-        //        this.context.fillText(this.$refs.myCanvas.height, 20, this.$refs.myCanvas.height / 2)
-        //        this.context.fillText(this.$refs.myCanvas.width, this.$refs.myCanvas.width / 2, 20)
       }).catch(function (error) {
         console.log(error)
       })
     },
-    createCustomBoxes (boxArray, context) {
-      this.context.clearRect(0, 0, this.$refs.myCanvas.width, this.$refs.myCanvas.height)
-      boxArray.forEach(el => {
-        context.strokeStyle = '#000000'
-        if (el.selected) {
-          context.strokeStyle = '#FF0000'
+    createCustomBoxesAndContainers (containerArray, boxesArray, refs) {
+      for (var key in refs) {
+        console.log(key)
+        if (refs.hasOwnProperty(key)) {
+          index = key.split('s')[1]
+          console.log(index)
+          this.canvas = document.getElementById(key)
+          this.canvas.width = this.containerArray[index].Width
+          this.canvas.height = this.containerArray[index].Height
+          this.context = document.getElementById(key).getContext('2d')
+          console.log(this.context)
+          this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
+          this.context.font = '15px Arial'
+          this.context.fillStyle = 'red'
+          this.context.fillText(this.canvas.height, 20, this.canvas.height / 2)
+          this.context.fillText(this.canvas.width, this.canvas.width / 2, 20)
         }
-        context.strokeRect(el.X, el.Y, el.W, el.H)
-        context.font = '15px Arial'
-        context.fillStyle = 'blue'
-        context.fillText(el.ID, el.X + el.W / 2, el.Y + el.H / 2)
-        context.fillText(el.H, el.X, el.Y + el.H / 2)
-        context.fillText(el.W, el.X + el.W / 2 - 15, el.Y + 15)
+      }
+      boxesArray.forEach(el => {
+        this.context.strokeStyle = '#000000'
+        if (el.selected) {
+          this.context.strokeStyle = '#FF0000'
+        }
+        this.context.strokeRect(el.X, el.Y, el.W, el.H)
+        this.context.font = '15px Arial'
+        this.context.fillStyle = 'blue'
+        this.context.fillText(el.ID, el.X + el.W / 2, el.Y + el.H / 2)
+        this.context.fillText(el.H, el.X, el.Y + el.H / 2)
+        this.context.fillText(el.W, el.X + el.W / 2 - 15, el.Y + 15)
       })
-      context.stroke()
+      this.context.stroke()
     },
     generateData () {
       this.data = []
@@ -253,7 +262,6 @@ export default {
       this.context.fillText(this.$refs.myCanvas.width, this.$refs.myCanvas.width / 2, 20)
     },
     drawContainers () {
-      console.log('pozvana sam')
       var index = ''
       setTimeout(() => {
         console.log('REFS', this.$refs)
