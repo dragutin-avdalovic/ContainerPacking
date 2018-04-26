@@ -165,8 +165,7 @@ export default {
           if (String(indexOfCanvas) === oneContainerBoxArray.ContainerID) {
             console.log('key ' + key)
             this.context = document.getElementById(key).getContext('2d')
-            console.log(this.containers[indexOfCanvas])
-            this.context.clearRect(0, 0, this.containers[indexOfCanvas].Width, this.containers[indexOfCanvas].Height)
+            this.drawContainers()
           }
         }
         oneContainerBoxArray.PackedBoxes.forEach(el => {
