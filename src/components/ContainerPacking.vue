@@ -1,12 +1,7 @@
 <template>
   <div class="main">
-    <el-row>
-      <el-col class="row-bg-center" :xs="24" :sm="24" :md="24" :lg="14" :xl="14" v-for="(container, index) in containers" v-bind:key="index">
-        <canvas :id="'canvas' + index" :ref="'canvas' + index" width="0" height="0" style="border:1px solid red ;">
-          Your browser does not support the HTML5 canvas tag.
-        </canvas>
-      </el-col>
-      <el-col :xs="24" :sm="24" :md="24" :lg="10" :xl="10">
+    <el-row >
+      <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
         <el-col class="row-bg-center" :xs="12" :sm="12" :md="12" :lg="12" :xl="12">
           <span class="chooseType">Shiping type: </span>
           <el-select style="float: right;" v-model="shipping" v-on:change="convertType()" placeholder="Shiping type">
@@ -60,6 +55,11 @@
           <el-button type="success" v-on:click="fillContainer('GetSolution')">Get solution</el-button>
         </el-col>
       </el-col>
+      <el-col class="row-bg-center" :offset="2" :xs="22" :sm="22" :md="22" :lg="22" :xl="22" v-for="(container, index) in containers" v-bind:key="index">
+      <canvas :id="'canvas' + index" :ref="'canvas' + index" width="0" height="0" style="border:1px solid red ;">
+        Your browser does not support the HTML5 canvas tag.
+      </canvas>
+    </el-col>
     </el-row>
   </div>
 </template>
@@ -155,37 +155,34 @@ export default {
         console.log(error)
       })
     },
-    createCustomBoxesAndContainers (containerArray, boxesArray, refs) {
-      for (var key in refs) {
-        console.log(key)
-        if (refs.hasOwnProperty(key)) {
-          index = key.split('s')[1]
-          console.log(index)
-          this.canvas = document.getElementById(key)
-          this.canvas.width = this.containerArray[index].Width
-          this.canvas.height = this.containerArray[index].Height
-          this.context = document.getElementById(key).getContext('2d')
-          console.log(this.context)
-          this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
+    createCustomBoxesAndContainers (containersAndBoxesArray, refs) {
+      var indexOfCanvas = ''
+      containersAndBoxesArray.forEach((oneContainerBoxArray) => {
+        for (var key in refs) {
+          console.log('key ' + key)
+          indexOfCanvas = parseInt(key.split('s')[1]) + 1
+          console.log('c-index ' + indexOfCanvas)
+          if (String(indexOfCanvas) === oneContainerBoxArray.ContainerID) {
+            console.log('in')
+            console.log('key ' + key)
+            this.context = document.getElementById(key).getContext('2d')
+            console.log(this.context)
+          }
+        }
+        oneContainerBoxArray.PackedBoxes.forEach(el => {
+          this.context.strokeStyle = '#000000'
+          if (el.selected) {
+            this.context.strokeStyle = '#FF0000'
+          }
+          this.context.strokeRect(el.X, el.Y, el.W, el.H)
           this.context.font = '15px Arial'
-          this.context.fillStyle = 'red'
-          this.context.fillText(this.canvas.height, 20, this.canvas.height / 2)
-          this.context.fillText(this.canvas.width, this.canvas.width / 2, 20)
-        }
-      }
-      boxesArray.forEach(el => {
-        this.context.strokeStyle = '#000000'
-        if (el.selected) {
-          this.context.strokeStyle = '#FF0000'
-        }
-        this.context.strokeRect(el.X, el.Y, el.W, el.H)
-        this.context.font = '15px Arial'
-        this.context.fillStyle = 'blue'
-        this.context.fillText(el.ID, el.X + el.W / 2, el.Y + el.H / 2)
-        this.context.fillText(el.H, el.X, el.Y + el.H / 2)
-        this.context.fillText(el.W, el.X + el.W / 2 - 15, el.Y + 15)
+          this.context.fillStyle = 'blue'
+          this.context.fillText(el.ID, el.X + el.W / 2, el.Y + el.H / 2)
+          this.context.fillText(el.H, el.X, el.Y + el.H / 2)
+          this.context.fillText(el.W, el.X + el.W / 2 - 15, el.Y + 15)
+        })
+        this.context.stroke()
       })
-      this.context.stroke()
     },
     generateData () {
       this.data = []
@@ -216,7 +213,7 @@ export default {
           enumerable: true,
           configurable: true,
           writable: true,
-          value: [parseInt(this.container) + 1]
+          value: [1, 2]
         })
       } else {
         Object.defineProperty(obj, 'ContainerID', {
@@ -229,21 +226,26 @@ export default {
       console.log(obj)
       axios.post('http://52.157.147.48:80/PackingAPI/api/v1/' + type, obj).then((response) => {
         this.containerData = response.data
-
-        this.containerData[0].PackedBoxes.map(box => {
-          Object.defineProperty(box, 'selected', {
-            enumerable: true,
-            configurable: true,
-            writable: true,
-            value: false
+        setTimeout(() => {
+          Object.assign({}, this.containerData)
+          this.containerData.forEach((oneContainerData) => {
+            console.log(oneContainerData)
+            oneContainerData.PackedBoxes.map(box => {
+              Object.defineProperty(box, 'selected', {
+                enumerable: true,
+                configurable: true,
+                writable: true,
+                value: false
+              })
+              box.W /= 10
+              box.H /= 10
+              box.X /= 10
+              box.Y /= 10
+              return box
+            })
           })
-          box.W /= 10
-          box.H /= 10
-          box.X /= 10
-          box.Y /= 10
-          return box
-        })
-        this.createCustomBoxes(this.containerData[0].PackedBoxes, this.context)
+          this.createCustomBoxesAndContainers(this.containerData, this.$refs)
+        }, 5000)
       }).catch(function (error) {
         console.log(error)
       })
@@ -286,12 +288,6 @@ export default {
     convertType () {
       this.type = parseInt(this.shipping) + 1
     }
-  },
-  created () {
-    // this.getBoxes()
-    // this.getContainers()
-  },
-  mounted () {
   }
 }
 </script>
@@ -304,7 +300,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 10px 0;
+  padding: 10px 10px;
 }
 .chooseContainer
 {
