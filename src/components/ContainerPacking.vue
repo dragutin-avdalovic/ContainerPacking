@@ -150,23 +150,7 @@ export default {
           return container
         })
         console.log(this.$refs)
-        var index = ''
-        for (var key in this.$refs) {
-          console.log(key)
-          if (this.$refs.hasOwnProperty(key)) {
-            index = key.split('s')[1]
-            console.log(index)
-            this.canvas = document.getElementById(key)
-            this.canvas.width = this.containers[index].Width
-            this.canvas.height = this.containers[index].Height
-            this.context = document.getElementById(key).getContext('2d')
-            console.log(this.context)
-            this.context.font = '15px Arial'
-            this.context.fillStyle = 'red'
-            this.context.fillText(this.canvas.height, 20, this.canvas.height / 2)
-            this.context.fillText(this.canvas.width, this.canvas.width / 2, 20)
-          }
-        }
+        this.drawContainers()
 
         //        this.$refs.myCanvas.width = this.containers[0].Width
         //        this.$refs.myCanvas.height = this.containers[0].Height
@@ -271,22 +255,25 @@ export default {
     drawContainers () {
       console.log('pozvana sam')
       var index = ''
-      for (var key in this.$refs) {
-        console.log(key)
-        if (this.$refs.hasOwnProperty(key)) {
-          index = key.split('s')[1]
-          console.log(index)
-          this.canvas = document.getElementById(key)
-          this.canvas.width = this.containers[index].Width
-          this.canvas.height = this.containers[index].Height
-          this.context = document.getElementById(key).getContext('2d')
-          console.log(this.context)
-          this.context.font = '15px Arial'
-          this.context.fillStyle = 'red'
-          this.context.fillText(this.canvas.height, 20, this.canvas.height / 2)
-          this.context.fillText(this.canvas.width, this.canvas.width / 2, 20)
+      setTimeout(() => {
+        console.log('REFS', this.$refs)
+        for (var key in this.$refs) {
+          console.log(key)
+          if (this.$refs.hasOwnProperty(key)) {
+            index = key.split('s')[1]
+            console.log(index)
+            this.canvas = document.getElementById(key)
+            this.canvas.width = this.containers[index].Width
+            this.canvas.height = this.containers[index].Height
+            this.context = document.getElementById(key).getContext('2d')
+            console.log(this.context)
+            this.context.font = '15px Arial'
+            this.context.fillStyle = 'red'
+            this.context.fillText(this.canvas.height, 20, this.canvas.height / 2)
+            this.context.fillText(this.canvas.width, this.canvas.width / 2, 20)
+          }
         }
-      }
+      }, 5000)
     },
     convertType () {
       this.type = parseInt(this.shipping) + 1
