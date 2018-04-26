@@ -149,7 +149,6 @@ export default {
           container.Height /= 10
           return container
         })
-        console.log(this.$refs)
         this.drawContainers()
       }).catch(function (error) {
         console.log(error)
@@ -225,33 +224,31 @@ export default {
       console.log(obj)
       axios.post('http://52.157.147.48:80/PackingAPI/api/v1/' + type, obj).then((response) => {
         this.containerData = response.data
-        setTimeout(() => {
-          Object.assign({}, this.containerData)
-          this.containerData.forEach((oneContainerData) => {
-            console.log(oneContainerData)
-            oneContainerData.PackedBoxes.map(box => {
-              Object.defineProperty(box, 'selected', {
-                enumerable: true,
-                configurable: true,
-                writable: true,
-                value: false
-              })
-              box.W /= 10
-              box.H /= 10
-              box.X /= 10
-              box.Y /= 10
-              return box
+        Object.assign({}, this.containerData)
+        this.containerData.forEach((oneContainerData) => {
+          console.log(oneContainerData)
+          oneContainerData.PackedBoxes.map(box => {
+            Object.defineProperty(box, 'selected', {
+              enumerable: true,
+              configurable: true,
+              writable: true,
+              value: false
             })
+            box.W /= 10
+            box.H /= 10
+            box.X /= 10
+            box.Y /= 10
+            return box
           })
-          this.createCustomBoxesAndContainers(this.containerData, this.$refs)
-        }, 5000)
+        })
+        this.createCustomBoxesAndContainers(this.containerData, this.$refs)
       }).catch(function (error) {
         console.log(error)
       })
     },
     clearSelection () {
       this.value = []
-      this.context.clearRect(0, 0, this.$refs.myCanvas.width, this.$refs.myCanvas.height)
+      this.clearContainers()
     },
     drawContainer () {
       console.log(this.container)
@@ -265,7 +262,7 @@ export default {
     drawContainers () {
       var index = ''
       setTimeout(() => {
-        console.log('REFS', this.$refs)
+        console.log('REFS->', this.$refs)
         for (var key in this.$refs) {
           console.log(key)
           if (this.$refs.hasOwnProperty(key)) {
@@ -275,7 +272,6 @@ export default {
             this.canvas.width = this.containers[index].Width
             this.canvas.height = this.containers[index].Height
             this.context = document.getElementById(key).getContext('2d')
-            console.log(this.context)
             this.context.font = '15px Arial'
             this.context.fillStyle = 'red'
             this.context.fillText(this.canvas.height, 20, this.canvas.height / 2)
@@ -283,6 +279,22 @@ export default {
           }
         }
       }, 5000)
+    },
+    clearContainers () {
+      var index = ''
+      console.log('REFS->', this.$refs)
+      for (var key in this.$refs) {
+        console.log(key)
+        if (this.$refs.hasOwnProperty(key)) {
+          index = key.split('s')[1]
+          console.log(index)
+          this.canvas = document.getElementById(key)
+          this.canvas.width = this.containers[index].Width
+          this.canvas.height = this.containers[index].Height
+          this.context = document.getElementById(key).getContext('2d')
+          this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
+        }
+      }
     },
     convertType () {
       this.type = parseInt(this.shipping) + 1
