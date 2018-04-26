@@ -2,7 +2,7 @@ n<template>
   <div class="main">
     <el-row>
       <el-col class="row-bg-center" :xs="24" :sm="24" :md="24" :lg="14" :xl="14" v-for="(container, index) in containers" v-bind:key="index">
-        <canvas :id="'canvas' + index" :ref="'canvas' + index" width="10" height="10" style="border:1px solid red ;">
+        <canvas :id="'canvas' + index" :ref="'canvas' + index" width="0" height="0" style="border:1px solid red ;">
           Your browser does not support the HTML5 canvas tag.
         </canvas>
       </el-col>
@@ -77,8 +77,8 @@ export default {
       value: [],
       containerData: [],
       titles: ['Boxes', 'Selected Boxes'],
-      canvas: null,
-      context: null,
+      canvas: [],
+      context: [],
       container: '1',
       shipping: '',
       type: null,
@@ -149,12 +149,31 @@ export default {
           container.Height /= 10
           return container
         })
-        this.$refs.myCanvas.width = this.containers[0].Width
-        this.$refs.myCanvas.height = this.containers[0].Height
-        this.context.font = '15px Arial'
-        this.context.fillStyle = 'red'
-        this.context.fillText(this.$refs.myCanvas.height, 20, this.$refs.myCanvas.height / 2)
-        this.context.fillText(this.$refs.myCanvas.width, this.$refs.myCanvas.width / 2, 20)
+        console.log(this.$refs)
+        var index = ''
+        for (var key in this.$refs) {
+          console.log(key)
+          if (this.$refs.hasOwnProperty(key)) {
+            index = key.split('s')[1]
+            console.log(index)
+            this.canvas = document.getElementById(key)
+            this.canvas.width = this.containers[index].Width
+            this.canvas.height = this.containers[index].Height
+            this.context = document.getElementById(key).getContext('2d')
+            console.log(this.context)
+            this.context.font = '15px Arial'
+            this.context.fillStyle = 'red'
+            this.context.fillText(this.canvas.height, 20, this.canvas.height / 2)
+            this.context.fillText(this.canvas.width, this.canvas.width / 2, 20)
+          }
+        }
+
+        //        this.$refs.myCanvas.width = this.containers[0].Width
+        //        this.$refs.myCanvas.height = this.containers[0].Height
+        //        this.context.font = '15px Arial'
+        //        this.context.fillStyle = 'red'
+        //        this.context.fillText(this.$refs.myCanvas.height, 20, this.$refs.myCanvas.height / 2)
+        //        this.context.fillText(this.$refs.myCanvas.width, this.$refs.myCanvas.width / 2, 20)
       }).catch(function (error) {
         console.log(error)
       })
@@ -250,20 +269,10 @@ export default {
       this.context.fillText(this.$refs.myCanvas.width, this.$refs.myCanvas.width / 2, 20)
     },
     drawContainers () {
+      console.log('pozvana sam')
       var index = ''
-      for (var item in this.$refs) {
-        if (this.$refs.hasOwnProperty(item)) {
-          this.contextArray.push(this.$refs[item])
-          // var ctx = c.getContext('2d')
-          // this.context = ctx
-          // this.canvas = c
-          // console.log(this.$refs)
-          //    this.addMouseEvent()
-        }
-      }
-
-      console.log(this.contextArray)
       for (var key in this.$refs) {
+        console.log(key)
         if (this.$refs.hasOwnProperty(key)) {
           index = key.split('s')[1]
           console.log(index)
@@ -288,7 +297,6 @@ export default {
     // this.getContainers()
   },
   mounted () {
-
   }
 }
 </script>
