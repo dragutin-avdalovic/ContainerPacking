@@ -31,7 +31,7 @@
         </el-col>
         <el-col class="row-bg-center" :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
           <span class="chooseContainer">Choose container:</span>
-          <el-select style="float: right;" v-on:change="drawContainers()" v-model="container" placeholder="Select container">
+          <el-select style="float: right;" v-model="container" multiple placeholder="Select container">
             <el-option
               v-for="(item, index) in containers"
               :key="item.ID"
@@ -164,7 +164,6 @@ export default {
           if (String(indexOfCanvas) === oneContainerBoxArray.ContainerID) {
             console.log('key ' + key)
             this.context = document.getElementById(key).getContext('2d')
-            this.drawContainers()
           }
         }
         oneContainerBoxArray.PackedBoxes.forEach(el => {
@@ -192,6 +191,8 @@ export default {
       })
     },
     fillContainer (type) {
+      console.log(this.container)
+      this.clearContainers()
       this.containerBoxes = []
       this.value.forEach((value) => {
         this.containerBoxes.push({BoxID: value, Rotated: false})
@@ -201,6 +202,9 @@ export default {
         Boxes: this.containerBoxes
       }
       if (type !== 'FillContainer') {
+        this.container.forEach((container, i) => {
+          this.container[i] = parseInt(container) + 1
+        })
         Object.defineProperty(obj, 'Rotation', {
           enumerable: true,
           configurable: true,
@@ -211,7 +215,7 @@ export default {
           enumerable: true,
           configurable: true,
           writable: true,
-          value: [1, 2]
+          value: this.container
         })
       } else {
         Object.defineProperty(obj, 'ContainerID', {
