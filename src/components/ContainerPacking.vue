@@ -80,6 +80,7 @@ export default {
       canvas: [],
       context: [],
       container: '1',
+      containerCopy: [],
       shipping: '',
       type: null,
       shippingTitles: ['By Sea', 'By Truck', 'By Plane', 'Articulated vehicle'],
@@ -203,7 +204,7 @@ export default {
       }
       if (type !== 'FillContainer') {
         this.container.forEach((container, i) => {
-          this.container[i] = parseInt(container) + 1
+          this.containerCopy[i] = parseInt(container) + 1
         })
         Object.defineProperty(obj, 'Rotation', {
           enumerable: true,
@@ -215,7 +216,7 @@ export default {
           enumerable: true,
           configurable: true,
           writable: true,
-          value: this.container
+          value: this.containerCopy
         })
       } else {
         Object.defineProperty(obj, 'ContainerID', {
