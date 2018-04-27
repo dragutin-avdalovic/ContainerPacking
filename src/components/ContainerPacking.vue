@@ -76,7 +76,7 @@ export default {
       containerBoxes: [],
       value: [],
       containerData: [],
-      titles: ['Boxes', 'Selected Boxes'],
+      titles: ['Pallets', 'Selected Pallets'],
       canvas: [],
       context: [],
       container: '1',
