@@ -197,7 +197,7 @@ export default {
           this.context.strokeStyle = '#000000'
           if (el.selected) {
             this.context.strokeStyle = '#FF0000'
-            this.context.lineWidth = 1
+            this.context.lineWidth = 1.5
           }
           this.context.strokeRect(el.X, el.Y, el.W, el.H)
           this.context.font = '15px Arial'
@@ -220,7 +220,7 @@ export default {
     },
     fillContainer (type) {
       console.log(this.container)
-      if (this.container != '') {
+      if (String(this.container).valueOf() !== '') {
         this.clearContainers()
         this.containerBoxes = []
         this.value.forEach((value) => {
@@ -343,7 +343,7 @@ export default {
       this.type = parseInt(this.shipping) + 1
     },
     onSucessUpload: function (response, file, fileList) {
-      this.filenames.push(file.name)
+      this.filenames.push(response)
     },
     notifyChooseContainer () {
       this.$notify.error({
