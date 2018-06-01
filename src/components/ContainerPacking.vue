@@ -6,14 +6,12 @@
           <el-upload
             class="upload-demo"
             drag
-            action="https://jsonplaceholder.typicode.com/posts/"
-            :on-preview="handlePreview"
-            :on-remove="handleRemove"
-            :file-list="fileList"
+            action="http://52.157.147.48:80/PackingAPI/api/v1/UploadFile"
+            :on-success = "onSucessUpload"
             multiple>
             <i class="el-icon-upload"></i>
             <div class="el-upload__text">Drop file here or <em>click to upload</em></div>
-            <div class="el-upload__tip" slot="tip">xls/xlsx files</div>
+            <div class="el-upload__tip" slot="tip">Upload type of file - .xls/.xlsx files</div>
           </el-upload>
         </el-col>
         <el-col :xs="12" :sm="12" :md="12" :lg="12" :xl="12">
@@ -103,8 +101,9 @@ export default {
       type: null,
       shippingTitles: ['By Sea', 'By Truck', 'By Plane', 'Articulated vehicle'],
       filename: '',
-      filenames: ['PALLETS3.xls'],
-      contextArray: []
+      filenames: [],
+      contextArray: [],
+      fileList: []
     }
   },
   methods: {
@@ -321,6 +320,9 @@ export default {
     },
     convertType () {
       this.type = parseInt(this.shipping) + 1
+    },
+    onSucessUpload: function (response, file, fileList) {
+      this.filenames.push(file.name)
     }
   }
 }
