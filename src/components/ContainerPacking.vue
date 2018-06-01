@@ -8,6 +8,7 @@
             drag
             action="http://52.157.147.48:80/PackingAPI/api/v1/UploadFile"
             :on-success = "onSucessUpload"
+            :accept="' .xls, .xlsx'"
             multiple>
             <i class="el-icon-upload"></i>
             <div class="el-upload__text">Drop file here or <em>click to upload</em></div>
@@ -40,7 +41,7 @@
           </el-select>
         </el-col>
           <el-col class="row-bg-center">
-          <el-button type="warning" v-on:click="getBoxesAndContainers(type, filename)">Get new data</el-button>
+          <el-button type="warning" v-on:click="getBoxesAndContainers(type, filename)">Get containers and pallets</el-button>
         </el-col>
         </el-col>
         <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
@@ -72,7 +73,7 @@
         </el-col>
       </el-col>
     </el-row>
-    <div v-for="(container, index) in containers" v-bind:key="index">
+    <div class="canvas-div" v-for="(container, index) in containers" v-bind:key="index">
       <canvas :id="'canvas' + index" :ref="'canvas' + index" width="0" height="0" style="border:1px solid red ;">
         Your browser does not support the HTML5 canvas tag.
       </canvas>
@@ -95,7 +96,7 @@ export default {
       titles: ['Pallets', 'Selected Pallets'],
       canvas: [],
       context: [],
-      container: '1',
+      container: '',
       containerCopy: [],
       shipping: '',
       type: null,
@@ -104,7 +105,8 @@ export default {
       filenames: [],
       contextArray: [],
       fileList: [],
-      canvases: []
+      canvases: [],
+      selectedOrder: 0
     }
   },
   mounted () {
@@ -117,7 +119,7 @@ export default {
         y: evt.clientY - rect.top
       }
     },
-    addMouseEvent (canvas) {
+    addMouseEvent (canvas, selectedOrder) {
       canvas.addEventListener('click', (evt) => {
         let mousePos = this.getMousePos(evt, canvas)
         this.containerData.forEach((oneContainerData) => {
@@ -126,6 +128,7 @@ export default {
             el.selected = false
             if ((mousePos.x > el.X && mousePos.x < (el.X + el.W)) && (mousePos.y > el.Y && mousePos.y < (el.Y + el.H))) {
               el.selected = true
+              el.selectOrder = selectedOrder
             }
             return el
           })
@@ -194,6 +197,7 @@ export default {
           this.context.strokeStyle = '#000000'
           if (el.selected) {
             this.context.strokeStyle = '#FF0000'
+            this.context.lineWidth = 1
           }
           this.context.strokeRect(el.X, el.Y, el.W, el.H)
           this.context.font = '15px Arial'
@@ -216,63 +220,73 @@ export default {
     },
     fillContainer (type) {
       console.log(this.container)
-      this.clearContainers()
-      this.containerBoxes = []
-      this.value.forEach((value) => {
-        this.containerBoxes.push({BoxID: value, Rotated: false})
-      })
+      if (this.container != '') {
+        this.clearContainers()
+        this.containerBoxes = []
+        this.value.forEach((value) => {
+          this.containerBoxes.push({BoxID: value, Rotated: false})
+        })
 
-      let obj = {
-        Boxes: this.containerBoxes
-      }
-      if (type !== 'FillContainer') {
-        this.container.forEach((container, i) => {
-          this.containerCopy[i] = parseInt(container) + 1
-        })
-        Object.defineProperty(obj, 'Rotation', {
-          enumerable: true,
-          configurable: true,
-          writable: true,
-          value: true
-        })
-        Object.defineProperty(obj, 'ContainerIDs', {
-          enumerable: true,
-          configurable: true,
-          writable: true,
-          value: this.containerCopy
+        let obj = {
+          Boxes: this.containerBoxes
+        }
+        if (type !== 'FillContainer') {
+          this.container.forEach((container, i) => {
+            this.containerCopy[i] = parseInt(container) + 1
+          })
+          Object.defineProperty(obj, 'Rotation', {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: true
+          })
+          Object.defineProperty(obj, 'ContainerIDs', {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: this.containerCopy
+          })
+        } else {
+          Object.defineProperty(obj, 'ContainerID', {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: parseInt(this.container) + 1
+          })
+        }
+        console.log(obj)
+        axios.post('http://52.157.147.48:80/PackingAPI/api/v1/' + type, obj).then((response) => {
+          this.containerData = response.data
+          Object.assign({}, this.containerData)
+          this.containerData.forEach((oneContainerData) => {
+            console.log(oneContainerData)
+            oneContainerData.PackedBoxes.map(box => {
+              Object.defineProperty(box, 'selected', {
+                enumerable: true,
+                configurable: true,
+                writable: true,
+                value: false
+              })
+              Object.defineProperty(box, 'selectedOrder', {
+                enumerable: true,
+                configurable: true,
+                writable: true,
+                value: 0
+              })
+              box.W /= 10
+              box.H /= 10
+              box.X /= 10
+              box.Y /= 10
+              return box
+            })
+          })
+          this.createCustomBoxesAndContainers(this.containerData, this.$refs)
+        }).catch(function (error) {
+          console.log(error)
         })
       } else {
-        Object.defineProperty(obj, 'ContainerID', {
-          enumerable: true,
-          configurable: true,
-          writable: true,
-          value: parseInt(this.container) + 1
-        })
+        this.notifyChooseContainer()
       }
-      console.log(obj)
-      axios.post('http://52.157.147.48:80/PackingAPI/api/v1/' + type, obj).then((response) => {
-        this.containerData = response.data
-        Object.assign({}, this.containerData)
-        this.containerData.forEach((oneContainerData) => {
-          console.log(oneContainerData)
-          oneContainerData.PackedBoxes.map(box => {
-            Object.defineProperty(box, 'selected', {
-              enumerable: true,
-              configurable: true,
-              writable: true,
-              value: false
-            })
-            box.W /= 10
-            box.H /= 10
-            box.X /= 10
-            box.Y /= 10
-            return box
-          })
-        })
-        this.createCustomBoxesAndContainers(this.containerData, this.$refs)
-      }).catch(function (error) {
-        console.log(error)
-      })
     },
     clearSelection () {
       this.value = []
@@ -297,7 +311,7 @@ export default {
             index = key.split('s')[1]
             console.log(index)
             this.canvas = document.getElementById(key)
-            this.addMouseEvent(this.canvas)
+            this.addMouseEvent(this.canvas, this.selectedOrder)
             this.canvas.width = this.containers[index].Width
             this.canvas.height = this.containers[index].Height
             this.context = document.getElementById(key).getContext('2d')
@@ -330,6 +344,12 @@ export default {
     },
     onSucessUpload: function (response, file, fileList) {
       this.filenames.push(file.name)
+    },
+    notifyChooseContainer () {
+      this.$notify.error({
+        title: 'Error',
+        message: 'Please choose a container to fill'
+      })
     }
   }
 }
@@ -358,10 +378,14 @@ export default {
   color: green;
   padding-right: 0.5em;
 }
-  .main
+.main
 {
     padding-top: 2em;
     padding-bottom: 2em;
-  }
+}
+.canvas-div
+{
+  margin: 1em;
+}
 
 </style>
