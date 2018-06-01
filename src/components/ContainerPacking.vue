@@ -103,28 +103,34 @@ export default {
       filename: '',
       filenames: [],
       contextArray: [],
-      fileList: []
+      fileList: [],
+      canvases: []
     }
   },
+  mounted () {
+  },
   methods: {
-    getMousePos (evt) {
-      var rect = this.canvas.getBoundingClientRect()
+    getMousePos (evt, canvas) {
+      var rect = canvas.getBoundingClientRect()
       return {
         x: evt.clientX - rect.left,
         y: evt.clientY - rect.top
       }
     },
-    addMouseEvent () {
-      this.canvas.addEventListener('click', (evt) => {
-        let mousePos = this.getMousePos(evt)
-        this.containerData[0].PackedBoxes.map(el => {
-          el.selected = false
-          if ((mousePos.x > el.X && mousePos.x < (el.X + el.W)) && (mousePos.y > el.Y && mousePos.y < (el.Y + el.H))) {
-            el.selected = true
-          }
-          return el
+    addMouseEvent (canvas) {
+      canvas.addEventListener('click', (evt) => {
+        let mousePos = this.getMousePos(evt, canvas)
+        this.containerData.forEach((oneContainerData) => {
+          console.log(oneContainerData)
+          oneContainerData.PackedBoxes.map(el => {
+            el.selected = false
+            if ((mousePos.x > el.X && mousePos.x < (el.X + el.W)) && (mousePos.y > el.Y && mousePos.y < (el.Y + el.H))) {
+              el.selected = true
+            }
+            return el
+          })
         })
-        this.createCustomBoxes(this.containerData[0].PackedBoxes, this.context)
+        this.createCustomBoxesAndContainers(this.containerData, this.$refs)
       }, false)
     },
     getContainers () {
@@ -291,6 +297,7 @@ export default {
             index = key.split('s')[1]
             console.log(index)
             this.canvas = document.getElementById(key)
+            this.addMouseEvent(this.canvas)
             this.canvas.width = this.containers[index].Width
             this.canvas.height = this.containers[index].Height
             this.context = document.getElementById(key).getContext('2d')
