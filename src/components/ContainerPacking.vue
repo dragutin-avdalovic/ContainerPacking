@@ -2,7 +2,22 @@
   <div class="main">
     <el-row >
       <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
-        <el-col class="row-bg-center" :xs="12" :sm="12" :md="12" :lg="12" :xl="12">
+        <el-col  class="row-bg-center" :xs="12" :sm="12" :md="12" :lg="12" :xl="12">
+          <el-upload
+            class="upload-demo"
+            drag
+            action="https://jsonplaceholder.typicode.com/posts/"
+            :on-preview="handlePreview"
+            :on-remove="handleRemove"
+            :file-list="fileList"
+            multiple>
+            <i class="el-icon-upload"></i>
+            <div class="el-upload__text">Drop file here or <em>click to upload</em></div>
+            <div class="el-upload__tip" slot="tip">xls/xlsx files</div>
+          </el-upload>
+        </el-col>
+        <el-col :xs="12" :sm="12" :md="12" :lg="12" :xl="12">
+          <el-col class="row-bg-center">
           <span class="chooseType">Shiping type: </span>
           <el-select style="float: right;" v-model="shipping" v-on:change="convertType()" placeholder="Shiping type">
             <el-option
@@ -14,7 +29,7 @@
             </el-option>
           </el-select>
         </el-col>
-        <el-col class="row-bg-center" :xs="12" :sm="12" :md="12" :lg="12" :xl="12">
+          <el-col class="row-bg-center">
           <span class="chooseType">File name: </span>
           <el-select style="float: right;" v-model="filename" placeholder="File name">
             <el-option
@@ -26,41 +41,44 @@
             </el-option>
           </el-select>
         </el-col>
-        <el-col class="row-bg-center" :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+          <el-col class="row-bg-center">
           <el-button type="warning" v-on:click="getBoxesAndContainers(type, filename)">Get new data</el-button>
         </el-col>
-        <el-col class="row-bg-center" :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
-          <span class="chooseContainer">Choose container:</span>
-          <el-select style="float: right;" v-model="container" multiple placeholder="Select container">
-            <el-option
-              v-for="(item, index) in containers"
-              :key="item.ID"
-              :value="index"
-            >
-              <span style="float: left; color: #0000ff">{{ item.ID }}</span>
-              <span style="float: right; color: #ff0000; font-size: 13px">W: {{ item.Width }}, H: {{ item.Height }}, T: {{  item.Type}}</span>
-            </el-option>
-          </el-select>
         </el-col>
-        <el-col class="row-bg-center" :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
-          <el-transfer
-          v-model="value"
-          :data="data"
-          :titles="titles">
-          </el-transfer>
-        </el-col>
-        <el-col class="row-bg-center" :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
-          <el-button type="danger" v-on:click="clearSelection()">Clear selection</el-button>
-          <el-button type="primary" v-on:click="fillContainer('FillContainer')">Fill the container</el-button>
-          <el-button type="success" v-on:click="fillContainer('GetSolution')">Get solution</el-button>
+        <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+          <el-col class="row-bg-center">
+            <el-transfer
+              v-model="value"
+              :data="data"
+              :titles="titles">
+            </el-transfer>
+          </el-col>
+          <el-col class="row-bg-center">
+            <span class="chooseContainer">Choose container:</span>
+            <el-select style="float: right;" v-model="container" multiple placeholder="Select container">
+              <el-option
+                v-for="(item, index) in containers"
+                :key="item.ID"
+                :value="index"
+              >
+                <span style="float: left; color: #0000ff">{{ item.ID }}</span>
+                <span style="float: right; color: #ff0000; font-size: 13px">W: {{ item.Width }}, H: {{ item.Height }}, T: {{  item.Type}}</span>
+              </el-option>
+            </el-select>
+          </el-col>
+          <el-col class="row-bg-center">
+            <el-button type="danger" v-on:click="clearSelection()">Clear selection</el-button>
+            <el-button type="primary" v-on:click="fillContainer('FillContainer')">Fill the container</el-button>
+            <el-button type="success" v-on:click="fillContainer('GetSolution')">Get solution</el-button>
+          </el-col>
         </el-col>
       </el-col>
-      <el-col class="row-bg-center" :offset="2" :xs="22" :sm="22" :md="22" :lg="22" :xl="22" v-for="(container, index) in containers" v-bind:key="index">
+    </el-row>
+    <div v-for="(container, index) in containers" v-bind:key="index">
       <canvas :id="'canvas' + index" :ref="'canvas' + index" width="0" height="0" style="border:1px solid red ;">
         Your browser does not support the HTML5 canvas tag.
       </canvas>
-    </el-col>
-    </el-row>
+    </div>
   </div>
 </template>
 
@@ -317,6 +335,7 @@ export default {
   justify-content: center;
   align-items: center;
   padding: 10px 10px;
+  margin-top: 0.5em;
 }
 .chooseContainer
 {
