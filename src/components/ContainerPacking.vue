@@ -73,6 +73,13 @@
         </el-col>
       </el-col>
     </el-row>
+    <el-col class="row-bg-center">
+      <div>
+        <el-radio v-model="editType" label="Swap" border>Swap</el-radio>
+        <el-radio v-model="editType" label="Rotate" border>Rotate</el-radio>
+        <el-button type="info" v-on:click="fillContainer('GetSolution')">Refill container</el-button>
+      </div>
+    </el-col>
     <div class="canvas-div" v-for="(container, index) in containers" v-bind:key="index">
       <canvas :id="'canvas' + index" :ref="'canvas' + index" width="0" height="0" style="border:1px solid red ;">
         Your browser does not support the HTML5 canvas tag.
@@ -106,7 +113,8 @@ export default {
       contextArray: [],
       fileList: [],
       canvases: [],
-      selectedOrder: 0
+      selectedOrder: 0,
+      editType: 'Rotate'
     }
   },
   mounted () {
@@ -122,17 +130,18 @@ export default {
     addMouseEvent (canvas, selectedOrder) {
       canvas.addEventListener('click', (evt) => {
         let mousePos = this.getMousePos(evt, canvas)
-        this.containerData.forEach((oneContainerData) => {
-          console.log(oneContainerData)
-          oneContainerData.PackedBoxes.map(el => {
-            el.selected = false
-            if ((mousePos.x > el.X && mousePos.x < (el.X + el.W)) && (mousePos.y > el.Y && mousePos.y < (el.Y + el.H))) {
-              el.selected = true
-              el.selectOrder = selectedOrder
-            }
-            return el
+        if (this.editType === 'Rotate') {
+          this.containerData.forEach((oneContainerData) => {
+            console.log(oneContainerData)
+            oneContainerData.PackedBoxes.map(el => {
+              el.rotate = false
+              if ((mousePos.x > el.X && mousePos.x < (el.X + el.W)) && (mousePos.y > el.Y && mousePos.y < (el.Y + el.H))) {
+                el.rotate = true
+              }
+              return el
+            })
           })
-        })
+        }
         this.createCustomBoxesAndContainers(this.containerData, this.$refs)
       }, false)
     },
@@ -195,16 +204,28 @@ export default {
         }
         oneContainerBoxArray.PackedBoxes.forEach(el => {
           this.context.strokeStyle = '#000000'
-          if (el.selected) {
+          if (el.rotate) {
             this.context.strokeStyle = '#FF0000'
-            this.context.lineWidth = 1.5
+            this.context.lineWidth = 1.25
+            this.context.strokeRect(el.X, el.Y, el.W, el.H)
+            this.context.font = '15px Arial'
+            this.context.fillStyle = 'red'
+            this.context.fillText('R', el.X + el.W / 2, el.Y + el.H / 2)
+            this.context.font = '15px Arial'
+            this.context.fillStyle = 'blue'
+            this.context.fillText(el.ID, el.X + el.W / 2, el.Y + el.H / 2 + 20)
+            this.context.fillText(el.H, el.X, el.Y + el.H / 2)
+            this.context.fillText(el.W, el.X + el.W / 2 - 15, el.Y + 15)
+          } else {
+            this.context.strokeStyle = '#2F4F4F'
+            this.context.lineWidth = 1
+            this.context.strokeRect(el.X, el.Y, el.W, el.H)
+            this.context.font = '15px Arial'
+            this.context.fillStyle = 'blue'
+            this.context.fillText(el.ID, el.X + el.W / 2, el.Y + el.H / 2 + 20)
+            this.context.fillText(el.H, el.X, el.Y + el.H / 2)
+            this.context.fillText(el.W, el.X + el.W / 2 - 15, el.Y + 15)
           }
-          this.context.strokeRect(el.X, el.Y, el.W, el.H)
-          this.context.font = '15px Arial'
-          this.context.fillStyle = 'blue'
-          this.context.fillText(el.ID, el.X + el.W / 2, el.Y + el.H / 2)
-          this.context.fillText(el.H, el.X, el.Y + el.H / 2)
-          this.context.fillText(el.W, el.X + el.W / 2 - 15, el.Y + 15)
         })
         this.context.stroke()
       })
