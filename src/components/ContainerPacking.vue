@@ -77,7 +77,7 @@
       <div>
         <el-radio v-model="editType" label="Swap" border>Swap</el-radio>
         <el-radio v-model="editType" label="Rotate" border>Rotate</el-radio>
-        <el-button type="info" v-on:click="fillContainer('GetSolution')">Refill container</el-button>
+        <el-button type="info" v-on:click="refillContainerRotate('FillContainer')">Refill container</el-button>
       </div>
     </el-col>
     <div class="canvas-div" v-for="(container, index) in containers" v-bind:key="index">
@@ -114,7 +114,8 @@ export default {
       fileList: [],
       canvases: [],
       selectedOrder: 0,
-      editType: 'Rotate'
+      editType: 'Rotate',
+      containerRotatedBoxes: []
     }
   },
   mounted () {
@@ -127,27 +128,29 @@ export default {
         y: evt.clientY - rect.top
       }
     },
-    addMouseEvent (canvas, selectedOrder) {
+    addMouseEvent (canvas) {
       canvas.addEventListener('click', (evt) => {
         let mousePos = this.getMousePos(evt, canvas)
+        this.containerRotatedBoxes = []
         if (this.editType === 'Rotate') {
           this.containerData.forEach((oneContainerData) => {
-            console.log(oneContainerData)
             oneContainerData.PackedBoxes.map(el => {
-              el.rotate = false
               if ((mousePos.x > el.X && mousePos.x < (el.X + el.W)) && (mousePos.y > el.Y && mousePos.y < (el.Y + el.H))) {
-                el.rotate = true
+                el.Rotated = true
+                this.containerRotatedBoxes.push({BoxID: el.ID, Rotated: true})
+              } else {
+                this.containerRotatedBoxes.push({BoxID: el.ID, Rotated: false})
               }
               return el
             })
           })
         }
+        console.log(this.containerRotatedBoxes)
         this.createCustomBoxesAndContainers(this.containerData, this.$refs)
       }, false)
     },
     getContainers () {
       axios.get('http://52.157.147.48:80/PackingAPI/api/v1/GetContainers').then((response) => {
-        console.log(response.data)
         this.containers = response.data.map(container => {
           container.Width /= 10
           container.Height /= 10
@@ -176,7 +179,6 @@ export default {
     },
     getBoxesAndContainers (type, filename) {
       axios.post('http://52.157.147.48:80/PackingAPI/api/v1/GetBoxesAndContainers?fileName=' + filename + '&typeofcont=' + type).then((response) => {
-        console.log(response.data)
         this.boxes = response.data['availableBoxes']
         this.generateData()
         this.containers = response.data['availableContainers']
@@ -194,17 +196,14 @@ export default {
       var indexOfCanvas = ''
       containersAndBoxesArray.forEach((oneContainerBoxArray) => {
         for (var key in refs) {
-          console.log('key ' + key)
           indexOfCanvas = parseInt(key.split('s')[1]) + 1
-          console.log('c-index ' + indexOfCanvas)
           if (String(indexOfCanvas) === oneContainerBoxArray.ContainerID) {
-            console.log('key ' + key)
             this.context = document.getElementById(key).getContext('2d')
           }
         }
         oneContainerBoxArray.PackedBoxes.forEach(el => {
           this.context.strokeStyle = '#000000'
-          if (el.rotate) {
+          if (el.Rotated) {
             this.context.strokeStyle = '#FF0000'
             this.context.lineWidth = 1.25
             this.context.strokeRect(el.X, el.Y, el.W, el.H)
@@ -240,10 +239,10 @@ export default {
       })
     },
     fillContainer (type) {
-      console.log(this.container)
       if (String(this.container).valueOf() !== '') {
         this.clearContainers()
         this.containerBoxes = []
+        this.containerRotatedBoxes = []
         this.value.forEach((value) => {
           this.containerBoxes.push({BoxID: value, Rotated: false})
         })
@@ -275,12 +274,10 @@ export default {
             value: parseInt(this.container) + 1
           })
         }
-        console.log(obj)
         axios.post('http://52.157.147.48:80/PackingAPI/api/v1/' + type, obj).then((response) => {
           this.containerData = response.data
           Object.assign({}, this.containerData)
           this.containerData.forEach((oneContainerData) => {
-            console.log(oneContainerData)
             oneContainerData.PackedBoxes.map(box => {
               Object.defineProperty(box, 'selected', {
                 enumerable: true,
@@ -288,11 +285,67 @@ export default {
                 writable: true,
                 value: false
               })
-              Object.defineProperty(box, 'selectedOrder', {
+              Object.defineProperty(box, 'Rotated', {
                 enumerable: true,
                 configurable: true,
                 writable: true,
-                value: 0
+                value: false
+              })
+              box.W /= 10
+              box.H /= 10
+              box.X /= 10
+              box.Y /= 10
+              return box
+            })
+          })
+          this.createCustomBoxesAndContainers(this.containerData, this.$refs)
+        }).catch(function (error) {
+          console.log(error)
+        })
+      } else {
+        this.notifyChooseContainer()
+      }
+    },
+    refillContainerRotate (type) {
+      if (String(this.container).valueOf() !== '') {
+        this.clearContainers()
+        let obj = {
+          Boxes: this.containerRotatedBoxes
+        }
+        if (type !== 'FillContainer') {
+          this.container.forEach((container, i) => {
+            this.containerCopy[i] = parseInt(container) + 1
+          })
+          Object.defineProperty(obj, 'Rotation', {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: true
+          })
+          Object.defineProperty(obj, 'ContainerIDs', {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: this.containerCopy
+          })
+        } else {
+          Object.defineProperty(obj, 'ContainerID', {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: parseInt(this.container) + 1
+          })
+        }
+        axios.post('http://52.157.147.48:80/PackingAPI/api/v1/' + type, obj).then((response) => {
+          this.containerData = response.data
+          Object.assign({}, this.containerData)
+          this.containerData.forEach((oneContainerData) => {
+            oneContainerData.PackedBoxes.map(box => {
+              Object.defineProperty(box, 'Rotated', {
+                enumerable: true,
+                configurable: true,
+                writable: true,
+                value: false
               })
               box.W /= 10
               box.H /= 10
@@ -314,7 +367,6 @@ export default {
       this.clearContainers()
     },
     drawContainer () {
-      console.log(this.container)
       this.$refs.myCanvas.width = this.containers[this.container].Width
       this.$refs.myCanvas.height = this.containers[this.container].Height
       this.context.font = '15px Arial'
@@ -325,12 +377,9 @@ export default {
     drawContainers () {
       var index = ''
       setTimeout(() => {
-        console.log('REFS->', this.$refs)
         for (var key in this.$refs) {
-          console.log(key)
           if (this.$refs.hasOwnProperty(key)) {
             index = key.split('s')[1]
-            console.log(index)
             this.canvas = document.getElementById(key)
             this.addMouseEvent(this.canvas, this.selectedOrder)
             this.canvas.width = this.containers[index].Width
@@ -346,12 +395,9 @@ export default {
     },
     clearContainers () {
       var index = ''
-      console.log('REFS->', this.$refs)
       for (var key in this.$refs) {
-        console.log(key)
         if (this.$refs.hasOwnProperty(key)) {
           index = key.split('s')[1]
-          console.log(index)
           this.canvas = document.getElementById(key)
           this.canvas.width = this.containers[index].Width
           this.canvas.height = this.containers[index].Height
