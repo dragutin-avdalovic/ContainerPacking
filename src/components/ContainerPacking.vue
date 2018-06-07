@@ -138,14 +138,14 @@ export default {
               pos = this.containerRotatedBoxes.map(function (e) { return e.BoxID }).indexOf(el.ID)
               if ((mousePos.x > el.X && mousePos.x < (el.X + el.W)) && (mousePos.y > el.Y && mousePos.y < (el.Y + el.H))) {
                 el.Rotated = true
-                if (pos !== -1 && this.containerRotatedBoxes[pos].Rotated === false) {
+                if (pos !== -1) {
                   this.containerRotatedBoxes[pos].Rotated = true
                 } else {
                   this.containerRotatedBoxes.push({BoxID: el.ID, Rotated: true})
                 }
               } else {
                 el.Rotated = false
-                if (pos !== -1 && this.containerRotatedBoxes[pos].Rotated === false) {
+                if (pos !== -1) {
                   this.containerRotatedBoxes[pos].Rotated = false
                 } else {
                   this.containerRotatedBoxes.push({BoxID: el.ID, Rotated: false})
