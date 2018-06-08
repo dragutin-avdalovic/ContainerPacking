@@ -136,20 +136,13 @@ export default {
             oneContainerData.PackedBoxes.map(el => {
               if ((mousePos.x > el.X && mousePos.x < (el.X + el.W)) && (mousePos.y > el.Y && mousePos.y < (el.Y + el.H))) {
                 el.Rotated = true
-                if (this.containerRotatedBoxes.length === 0) {
-                  console.log('0')
-                  this.containerRotatedBoxes.push({BoxID: el.ID, Rotated: el.Rotated})
+                let result = this.containerRotatedBoxes.find(function (element) { return element.BoxID === el.ID })
+                if (result) {
+                  console.log('rez')
+                  result.Rotated = el.Rotated
                 } else {
-                  console.log('>0')
-                  let result = this.containerRotatedBoxes.find(function (element) { return element.BoxID === el.ID })
-                  console.log(result)
-                  if (result) {
-                    console.log('rez')
-                    result.Rotated = el.Rotated
-                  } else {
-                    console.log('nema rez')
-                    this.containerRotatedBoxes.push({BoxID: el.ID, Rotated: el.Rotated})
-                  }
+                  console.log('nema rez')
+                  this.containerRotatedBoxes.push({BoxID: el.ID, Rotated: el.Rotated})
                 }
               } else {
                 el.Rotated = false
@@ -158,7 +151,6 @@ export default {
             })
           })
         }
-        console.log(this.containerRotatedBoxes)
         this.createCustomBoxesAndContainers(this.containerData, this.$refs)
       }, false)
     },
@@ -312,6 +304,11 @@ export default {
             })
           })
           this.createCustomBoxesAndContainers(this.containerData, this.$refs)
+          this.containerData.forEach((oneContainerData) => {
+            oneContainerData.PackedBoxes.map(el => {
+              this.containerRotatedBoxes.push({BoxID: el.ID, Rotated: false})
+            })
+          })
         }).catch(function (error) {
           console.log(error)
         })
@@ -368,6 +365,9 @@ export default {
             })
           })
           this.createCustomBoxesAndContainers(this.containerData, this.$refs)
+          this.containerRotatedBoxes.forEach((oneBox) => {
+            oneBox.Rotated = false
+          })
         }).catch(function (error) {
           console.log(error)
         })
