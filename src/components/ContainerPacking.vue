@@ -129,27 +129,17 @@ export default {
       }
     },
     addMouseEvent (canvas) {
-      var pos = -1
       canvas.addEventListener('click', (evt) => {
         let mousePos = this.getMousePos(evt, canvas)
         if (this.editType === 'Rotate') {
           this.containerData.forEach((oneContainerData) => {
             oneContainerData.PackedBoxes.map(el => {
-              pos = this.containerRotatedBoxes.map(function (e) { return e.BoxID }).indexOf(el.ID)
               if ((mousePos.x > el.X && mousePos.x < (el.X + el.W)) && (mousePos.y > el.Y && mousePos.y < (el.Y + el.H))) {
                 el.Rotated = true
-                if (pos !== -1) {
-                  this.containerRotatedBoxes[pos].Rotated = true
-                } else {
-                  this.containerRotatedBoxes.push({BoxID: el.ID, Rotated: true})
-                }
+                this.containerRotatedBoxes.push({BoxID: el.ID, Rotated: el.Rotated})
               } else {
                 el.Rotated = false
-                if (pos !== -1) {
-                  this.containerRotatedBoxes[pos].Rotated = false
-                } else {
-                  this.containerRotatedBoxes.push({BoxID: el.ID, Rotated: false})
-                }
+                this.containerRotatedBoxes.push({BoxID: el.ID, Rotated: el.Rotated})
               }
               return el
             })
