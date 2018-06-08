@@ -41,7 +41,7 @@
           </el-select>
         </el-col>
           <el-col class="row-bg-center">
-          <el-button type="warning" v-on:click="getBoxesAndContainers(type, filename)">Get containers and pallets</el-button>
+          <el-button :loading="loadingGetBoxesAndCont" type="warning" v-on:click="getBoxesAndContainers(type, filename)">Get containers and pallets</el-button>
         </el-col>
         </el-col>
         <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
@@ -119,7 +119,8 @@ export default {
       editType: 'Rotate',
       containerRotatedBoxes: [],
       rotationScale: 'FillContainer',
-      numberOfCont: 0
+      numberOfCont: 0,
+      loadingGetBoxesAndCont: false
     }
   },
   mounted () {
@@ -133,6 +134,7 @@ export default {
       }
     },
     addMouseEvent (canvas) {
+      console.log(this.numberOfCont)
       if (this.numberOfCont === 1) {
         this.rotationScale = 'FillContainer'
       } else if (this.numberOfCont === 2) {
@@ -192,6 +194,7 @@ export default {
         })
     },
     getBoxesAndContainers (type, filename) {
+      this.loadingGetBoxesAndCont = true
       axios.post('http://52.157.147.48:80/PackingAPI/api/v1/GetBoxesAndContainers?fileName=' + filename + '&typeofcont=' + type).then((response) => {
         this.boxes = response.data['availableBoxes']
         this.generateData()
@@ -201,6 +204,7 @@ export default {
           container.Height /= 10
           return container
         })
+        this.loadingGetBoxesAndCont = false
         this.drawContainers()
       }).catch(function (error) {
         console.log(error)
