@@ -79,7 +79,7 @@
         <el-radio v-model="editType" label="Rotate" border>Rotate</el-radio>
       </el-col>
       <el-col :xl="12" style="justify-content: flex-start; display: flex;">
-        <el-button type="warning" v-on:click="refillContainerRotate('FillContainer')">{{editType}} pallets</el-button>
+        <el-button type="warning" v-on:click="refillContainerRotate(rotationScale)">{{editType}} pallets</el-button>
       </el-col>
       </el-col>
     <div class="canvas-div" v-for="(container, index) in containers" v-bind:key="index">
@@ -118,7 +118,8 @@ export default {
       selectedOrder: 0,
       editType: 'Rotate',
       containerRotatedBoxes: [],
-      swapRotateText: 'Rotate selected pallets'
+      rotationScale: 'FillContainer',
+      numberOfCont: 0
     }
   },
   mounted () {
@@ -132,6 +133,11 @@ export default {
       }
     },
     addMouseEvent (canvas) {
+      if (this.numberOfCont === 1) {
+        this.rotationScale = 'FillContainer'
+      } else if (this.numberOfCont === 2) {
+        this.rotationScale = 'GetSolution'
+      }
       canvas.addEventListener('click', (evt) => {
         let mousePos = this.getMousePos(evt, canvas)
         if (this.editType === 'Rotate') {
@@ -392,12 +398,14 @@ export default {
     },
     drawContainers () {
       var index = ''
+      this.numberOfCont = 0
       setTimeout(() => {
         for (var key in this.$refs) {
           if (this.$refs.hasOwnProperty(key)) {
+            this.numberOfCont = this.numberOfCont + 1
             index = key.split('s')[1]
             this.canvas = document.getElementById(key)
-            this.addMouseEvent(this.canvas, this.selectedOrder)
+            this.addMouseEvent(this.canvas)
             this.canvas.width = this.containers[index].Width
             this.canvas.height = this.containers[index].Height
             this.context = document.getElementById(key).getContext('2d')
@@ -405,9 +413,11 @@ export default {
             this.context.fillStyle = 'red'
             this.context.fillText(this.canvas.height, 20, this.canvas.height / 2)
             this.context.fillText(this.canvas.width, this.canvas.width / 2, 20)
+            console.log(this.numberOfCont)
           }
         }
       }, 5000)
+      console.log(this.numberOfCont)
     },
     clearContainers () {
       var index = ''
