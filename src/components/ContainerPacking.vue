@@ -92,6 +92,8 @@
 
 <script>
 import axios from 'axios'
+import _ from 'lodash'
+
 export default {
   name: 'ContainerPacking',
   data () {
@@ -122,7 +124,8 @@ export default {
       numberOfCont: 0,
       loadingGetBoxesAndCont: false,
       EditQueue: 0,
-      editFinished: false
+      editFinished: false,
+      filteredObject: {}
     }
   },
   mounted () {
@@ -149,6 +152,9 @@ export default {
         this.rotationScale = 'GetSolution'
       }
       canvas.addEventListener('click', (evt) => {
+        this.filteredObject = _.filter(this.containerData[0].PackedBoxes, { 'ID': '1' })
+        console.log(this.containerData[0].PackedBoxes)
+        console.log(this.filteredObject)
         let mousePos = this.getMousePos(evt, canvas)
         if (this.editType === 'Rotate') {
           this.containerData.forEach((oneContainerData) => {
