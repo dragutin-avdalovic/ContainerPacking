@@ -120,7 +120,9 @@ export default {
       containerRotatedBoxes: [],
       rotationScale: 'FillContainer',
       numberOfCont: 0,
-      loadingGetBoxesAndCont: false
+      loadingGetBoxesAndCont: false,
+      EditQueue: 0,
+      editFinished: false
     }
   },
   mounted () {
@@ -149,10 +151,10 @@ export default {
                 el.Rotated = true
                 let result = this.containerRotatedBoxes.find(function (element) { return element.BoxID === el.ID })
                 if (result) {
-                  console.log('rez')
+                  console.log('vec u nizu')
                   result.Rotated = el.Rotated
                 } else {
-                  console.log('nema rez')
+                  console.log('nema u nizu paleta')
                   this.containerRotatedBoxes.push({BoxID: el.ID, Rotated: el.Rotated})
                 }
               } else {
@@ -161,6 +163,38 @@ export default {
               return el
             })
           })
+        } else if (this.editType === 'Swap') {
+          if (!this.editFinished) {
+            console.log(this.containerData)
+            this.containerData.forEach((oneContainerData) => {
+              oneContainerData.PackedBoxes.map(el => {
+                if ((mousePos.x > el.X && mousePos.x < (el.X + el.W)) && (mousePos.y > el.Y && mousePos.y < (el.Y + el.H))) {
+                  console.log(this.EditQueue)
+                  if (parseInt(this.EditQueue) === 1) {
+                    console.log('thu sam')
+                    this.editFinished = true
+                  }
+                  this.EditQueue += 1
+                  el.EditQueue = this.EditQueue
+                  let result = this.containerRotatedBoxes.find(function (element) { return element.BoxID === el.ID })
+                  if (result) {
+                    console.log('vec u nizu')
+                    result.EditQueue = this.EditQueue
+                  } else {
+                    console.log('nema u nizu paleta')
+                    this.containerRotatedBoxes.push({BoxID: el.ID, Rotated: el.Rotated})
+                  }
+                } else {
+                }
+                return el
+              })
+            })
+          } else {
+            this.$notify.warning({
+              title: 'Warning',
+              message: 'Only two pallets can be swaped.'
+            })
+          }
         }
         this.createCustomBoxesAndContainers(this.containerData, this.$refs)
       }, false)
@@ -228,6 +262,18 @@ export default {
             this.context.font = '15px Arial'
             this.context.fillStyle = 'red'
             this.context.fillText('R', el.X + el.W / 2, el.Y + el.H / 2)
+            this.context.font = '15px Arial'
+            this.context.fillStyle = 'blue'
+            this.context.fillText(el.ID, el.X + el.W / 2, el.Y + el.H / 2 + 20)
+            this.context.fillText(el.H, el.X, el.Y + el.H / 2)
+            this.context.fillText(el.W, el.X + el.W / 2 - 15, el.Y + 15)
+          } else if (el.EditQueue !== 0) {
+            this.context.strokeStyle = '#40ff0c'
+            this.context.lineWidth = 1.25
+            this.context.strokeRect(el.X, el.Y, el.W, el.H)
+            this.context.font = '15px Arial'
+            this.context.fillStyle = 'orange'
+            this.context.fillText(el.EditQueue, el.X + el.W / 2, el.Y + el.H / 2)
             this.context.font = '15px Arial'
             this.context.fillStyle = 'blue'
             this.context.fillText(el.ID, el.X + el.W / 2, el.Y + el.H / 2 + 20)
@@ -308,6 +354,12 @@ export default {
                 configurable: true,
                 writable: true,
                 value: false
+              })
+              Object.defineProperty(box, 'EditQueue', {
+                enumerable: true,
+                configurable: true,
+                writable: true,
+                value: 0
               })
               box.W /= 10
               box.H /= 10
@@ -390,6 +442,8 @@ export default {
     },
     clearSelection () {
       this.value = []
+      this.editFinished = false
+      this.EditQueue = 0
       this.clearContainers()
     },
     drawContainer () {
