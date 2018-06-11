@@ -75,8 +75,8 @@
     </el-row>
     <el-col class="row-bg-center">
       <el-col :xl="12" style="justify-content: flex-end; display: flex;padding-right: 2em;">
-        <el-radio v-model="editType" label="Swap" border>Swap</el-radio>
-        <el-radio v-model="editType" label="Rotate" border>Rotate</el-radio>
+        <el-radio v-model="editType" label="Swap" border v-on:change="clearEdit">Swap</el-radio>
+        <el-radio v-model="editType" label="Rotate" border v-on:change="clearEdit">Rotate</el-radio>
       </el-col>
       <el-col :xl="12" style="justify-content: flex-start; display: flex;">
         <el-button type="warning" v-on:click="refillContainerRotate(rotationScale)">{{editType}} pallets</el-button>
@@ -93,7 +93,7 @@
 <script>
 import axios from 'axios'
 export default {
-  name: 'HelloWorld',
+  name: 'ContainerPacking',
   data () {
     return {
       data: [],
@@ -128,6 +128,12 @@ export default {
   mounted () {
   },
   methods: {
+    clearEdit () {
+      console.log('cistim')
+      this.editFinished = false
+      this.EditQueue = 0
+      this.createCustomBoxesAndContainers(this.containerData, this.$refs)
+    },
     getMousePos (evt, canvas) {
       var rect = canvas.getBoundingClientRect()
       return {
@@ -267,7 +273,7 @@ export default {
             this.context.fillText(el.ID, el.X + el.W / 2, el.Y + el.H / 2 + 20)
             this.context.fillText(el.H, el.X, el.Y + el.H / 2)
             this.context.fillText(el.W, el.X + el.W / 2 - 15, el.Y + 15)
-          } else if (el.EditQueue !== 0) {
+          } else if (el.EditQueue > 0) {
             this.context.strokeStyle = '#40ff0c'
             this.context.lineWidth = 1.25
             this.context.strokeRect(el.X, el.Y, el.W, el.H)
@@ -433,6 +439,8 @@ export default {
           this.containerRotatedBoxes.forEach((oneBox) => {
             oneBox.Rotated = false
           })
+          this.EditQueue = 0
+          this.editFinished = false
         }).catch(function (error) {
           console.log(error)
         })
