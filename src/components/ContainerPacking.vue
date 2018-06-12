@@ -82,11 +82,13 @@
         <el-button type="warning" v-on:click="refillContainer(editType)">{{editType}} pallets</el-button>
       </el-col>
       </el-col>
-    <div class="canvas-div" v-for="(container, index) in containers" v-bind:key="index">
+    <el-row class="row-bg-center-canvas" v-for="(container, index) in containers" v-bind:key="index">
+      <div class="canvas-div">
       <canvas :id="'canvas' + index" :ref="'canvas' + index" width="0" height="0" style="border:1px solid #c08d13 ;">
         Your browser does not support the HTML5 canvas tag.
       </canvas>
     </div>
+    </el-row>
   </div>
 </template>
 
@@ -626,6 +628,19 @@ export default {
   padding: 10px 10px;
   margin-top: 0.5em;
 }
+.row-bg-center-canvas {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 96%;
+  overflow-x: auto;
+  margin: 2% 2%;
+}
+.canvas-div
+{
+  margin: 1em;
+  width: 100%;
+}
 .chooseContainer
 {
   font-size: 1em;
@@ -642,10 +657,6 @@ export default {
 {
     padding-top: 2em;
     padding-bottom: 2em;
-}
-.canvas-div
-{
-  margin: 1em;
 }
 
 </style>
