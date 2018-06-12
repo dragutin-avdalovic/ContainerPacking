@@ -157,14 +157,6 @@ export default {
       canvas.addEventListener('click', (evt) => {
         console.log('Container data')
         console.log(this.containerData)
-        _.forEach(this.containerData, (container, index) => {
-          console.log(container)
-          if (_.isEmpty(this.firstForEdit)) {
-            this.firstForEdit = _.find(container.PackedBoxes, { 'EditQueue': 1 })
-          } else if (_.isEmpty(this.secondForEdit)) {
-            this.secondForEdit = _.find(container.PackedBoxes, { 'EditQueue': 2 })
-          }
-        })
         let mousePos = this.getMousePos(evt, canvas)
         if (this.editType === 'Rotate') {
           this.containerData.forEach((oneContainerData) => {
@@ -465,28 +457,31 @@ export default {
           this.notifyChooseContainer()
         }
       } else if (type === 'Swap') {
+        _.forEach(this.containerData, (container, index) => {
+          console.log(container)
+          if (_.isEmpty(this.firstForEdit)) {
+            this.firstForEdit = _.find(container.PackedBoxes, { 'EditQueue': 1 })
+          } else if (_.isEmpty(this.secondForEdit)) {
+            this.secondForEdit = _.find(container.PackedBoxes, { 'EditQueue': 2 })
+          }
+        })
+        console.log('prvi sam')
+        console.log(this.firstForEdit)
+        console.log('drugi sam')
+        console.log(this.secondForEdit)
         if (!_.isEmpty(this.firstForEdit) && !_.isEmpty(this.secondForEdit)) {
           _.forEach(this.containerData, (container, index) => {
             console.log(container)
             var temp = {}
             Object.assign(temp, this.firstForEdit)
-            _.forEach(container.PackedBoxes, (box, index) => {
-              console.log(box.ID)
-              if (box.ID === this.firstForEdit.ID) {
-                console.log('prvi')
-                Object.assign(box, this.secondForEdit)
-              } else if (box.ID === this.secondForEdit.ID) {
-                console.log('drugi')
-                Object.assign(box, temp)
-              }
-            })
+            console.log('indeks prvog')
+            console.log(container.PackedBoxes.indexOf(this.firstForEdit))
+            console.log('indeks drugog')
+            console.log(container.PackedBoxes.indexOf(this.secondForEdit))
+            console.log('function done -zamjena izvrsena')
+            console.log(this.swap(container.PackedBoxes, container.PackedBoxes[container.PackedBoxes.indexOf(this.firstForEdit)], container.PackedBoxes[container.PackedBoxes.indexOf(this.secondForEdit)]))
           })
-          console.log('Swapped cont data')
-          console.log(this.containerData)
         }
-        _.forEach(this.containerData, (container, index) => {
-          console.log(container)
-        })
       }
     },
     clearSelection () {
@@ -550,6 +545,12 @@ export default {
         title: 'Error',
         message: 'Please choose a container to fill'
       })
+    },
+    swap (arr, index1, index2) {
+      var temp = arr[index2]
+      arr[index2] = arr[index1]
+      arr[index1] = temp
+      return arr
     }
   }
 }
