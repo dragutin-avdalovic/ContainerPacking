@@ -540,6 +540,7 @@ export default {
               })
               this.EditQueue = 0
               this.editFinished = false
+              this.containerSwapedBoxes = {}
             }).catch(function (error) {
               console.log(error)
             })
