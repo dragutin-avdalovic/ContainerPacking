@@ -478,8 +478,8 @@ export default {
             console.log(container.PackedBoxes.indexOf(this.firstForEdit))
             console.log('indeks drugog')
             console.log(container.PackedBoxes.indexOf(this.secondForEdit))
-            console.log('function done -zamjena izvrsena')
-            console.log(this.swap(container.PackedBoxes, container.PackedBoxes[container.PackedBoxes.indexOf(this.firstForEdit)], container.PackedBoxes[container.PackedBoxes.indexOf(this.secondForEdit)]))
+            console.log('zamjena izvrsena')
+            console.log(this.swap(container.PackedBoxes, container.PackedBoxes.indexOf(this.firstForEdit), container.PackedBoxes.indexOf(this.secondForEdit)))
           })
         }
       }
