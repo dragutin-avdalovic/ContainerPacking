@@ -128,7 +128,7 @@ export default {
       filteredObject: {},
       firstForEdit: {},
       secondForEdit: {},
-      containerSwapedBoxes: {}
+      containerSwapedBoxes: []
     }
   },
   mounted () {
@@ -480,7 +480,72 @@ export default {
             console.log(container.PackedBoxes.indexOf(this.secondForEdit))
             console.log('zamjena izvrsena')
             console.log(this.swap(container.PackedBoxes, container.PackedBoxes.indexOf(this.firstForEdit), container.PackedBoxes.indexOf(this.secondForEdit)))
+            _.forEach(container.PackedBoxes, (box, index) => {
+              this.containerSwapedBoxes.push({'BoxID': box.ID, 'Rotated': box.Rotated})
+              console.log(this.containerSwapedBoxes[index])
+            })
           })
+          console.log('new cont data')
+          console.log(this.containerSwapedBoxes)
+          if (String(this.container).valueOf() !== '') {
+            this.clearContainers()
+            let obj = {
+              Boxes: this.containerSwapedBoxes
+            }
+            if (this.editingScale !== 'FillContainer') {
+              this.container.forEach((container, i) => {
+                this.containerCopy[i] = parseInt(container) + 1
+              })
+              Object.defineProperty(obj, 'Rotation', {
+                enumerable: true,
+                configurable: true,
+                writable: true,
+                value: true
+              })
+              Object.defineProperty(obj, 'ContainerIDs', {
+                enumerable: true,
+                configurable: true,
+                writable: true,
+                value: this.containerCopy
+              })
+            } else {
+              Object.defineProperty(obj, 'ContainerID', {
+                enumerable: true,
+                configurable: true,
+                writable: true,
+                value: parseInt(this.container) + 1
+              })
+            }
+            axios.post('http://52.157.147.48:80/PackingAPI/api/v1/' + this.editingScale, obj).then((response) => {
+              this.containerData = response.data
+              Object.assign({}, this.containerData)
+              this.containerData.forEach((oneContainerData) => {
+                oneContainerData.PackedBoxes.map(box => {
+                  Object.defineProperty(box, 'Rotated', {
+                    enumerable: true,
+                    configurable: true,
+                    writable: true,
+                    value: false
+                  })
+                  box.W /= 10
+                  box.H /= 10
+                  box.X /= 10
+                  box.Y /= 10
+                  return box
+                })
+              })
+              this.createCustomBoxesAndContainers(this.containerData, this.$refs)
+              this.containerRotatedBoxes.forEach((oneBox) => {
+                oneBox.Rotated = false
+              })
+              this.EditQueue = 0
+              this.editFinished = false
+            }).catch(function (error) {
+              console.log(error)
+            })
+          } else {
+            this.notifyChooseContainer()
+          }
         }
       }
     },
