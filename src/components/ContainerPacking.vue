@@ -287,7 +287,7 @@ export default {
             this.context.strokeRect(el.X, el.Y, el.W, el.H)
             this.context.font = '15px Arial'
             this.context.fillStyle = 'orange'
-            this.context.fillText(el.EditQueue, el.X + el.W / 2, el.Y + el.H / 2)
+            this.context.fillText(el.EditQueue, el.X + el.W / 2, el.Y + el.H / 2 - 20)
             this.context.font = '15px Arial'
             this.context.fillStyle = 'blue'
             this.context.fillText(el.ID, el.X + el.W / 2, el.Y + el.H / 2 + 20)
@@ -357,12 +357,6 @@ export default {
           Object.assign({}, this.containerData)
           this.containerData.forEach((oneContainerData) => {
             oneContainerData.PackedBoxes.map(box => {
-              Object.defineProperty(box, 'selected', {
-                enumerable: true,
-                configurable: true,
-                writable: true,
-                value: false
-              })
               Object.defineProperty(box, 'Rotated', {
                 enumerable: true,
                 configurable: true,
@@ -457,6 +451,7 @@ export default {
           this.notifyChooseContainer()
         }
       } else if (type === 'Swap') {
+        this.containerSwapedBoxes = []
         _.forEach(this.containerData, (container, index) => {
           console.log(container)
           if (_.isEmpty(this.firstForEdit)) {
@@ -482,7 +477,6 @@ export default {
             console.log(this.swap(container.PackedBoxes, container.PackedBoxes.indexOf(this.firstForEdit), container.PackedBoxes.indexOf(this.secondForEdit)))
             _.forEach(container.PackedBoxes, (box, index) => {
               this.containerSwapedBoxes.push({'BoxID': box.ID, 'Rotated': box.Rotated})
-              console.log(this.containerSwapedBoxes[index])
             })
           })
           console.log('new cont data')
@@ -540,7 +534,6 @@ export default {
               })
               this.EditQueue = 0
               this.editFinished = false
-              this.containerSwapedBoxes = {}
             }).catch(function (error) {
               console.log(error)
             })
