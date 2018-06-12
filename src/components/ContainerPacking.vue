@@ -83,7 +83,7 @@
       </el-col>
       </el-col>
     <div class="canvas-div" v-for="(container, index) in containers" v-bind:key="index">
-      <canvas :id="'canvas' + index" :ref="'canvas' + index" width="0" height="0" style="border:1px solid red ;">
+      <canvas :id="'canvas' + index" :ref="'canvas' + index" width="0" height="0" style="border:1px solid #c08d13 ;">
         Your browser does not support the HTML5 canvas tag.
       </canvas>
     </div>
@@ -270,11 +270,11 @@ export default {
         oneContainerBoxArray.PackedBoxes.forEach(el => {
           this.context.strokeStyle = '#000000'
           if (el.Rotated) {
-            this.context.strokeStyle = '#FF0000'
+            this.context.strokeStyle = '#ff0000'
             this.context.lineWidth = 1.25
             this.context.strokeRect(el.X, el.Y, el.W, el.H)
             this.context.font = '15px Arial'
-            this.context.fillStyle = 'red'
+            this.context.fillStyle = '#ff0000'
             this.context.fillText('R', el.X + el.W / 2, el.Y + el.H / 2)
             this.context.font = '15px Arial'
             this.context.fillStyle = 'blue'
@@ -286,7 +286,7 @@ export default {
             this.context.lineWidth = 1.25
             this.context.strokeRect(el.X, el.Y, el.W, el.H)
             this.context.font = '15px Arial'
-            this.context.fillStyle = 'orange'
+            this.context.fillStyle = '#40ff0c'
             this.context.fillText(el.EditQueue, el.X + el.W / 2, el.Y + el.H / 2 - 20)
             this.context.font = '15px Arial'
             this.context.fillStyle = 'blue'
@@ -294,11 +294,11 @@ export default {
             this.context.fillText(el.H, el.X, el.Y + el.H / 2)
             this.context.fillText(el.W, el.X + el.W / 2 - 15, el.Y + 15)
           } else {
-            this.context.strokeStyle = '#2F4F4F'
+            this.context.strokeStyle = '#272041'
             this.context.lineWidth = 1
             this.context.strokeRect(el.X, el.Y, el.W, el.H)
             this.context.font = '15px Arial'
-            this.context.fillStyle = 'blue'
+            this.context.fillStyle = '#001cff'
             this.context.fillText(el.ID, el.X + el.W / 2, el.Y + el.H / 2 + 20)
             this.context.fillText(el.H, el.X, el.Y + el.H / 2)
             this.context.fillText(el.W, el.X + el.W / 2 - 15, el.Y + 15)
@@ -571,7 +571,7 @@ export default {
             this.canvas.height = this.containers[index].Height
             this.context = document.getElementById(key).getContext('2d')
             this.context.font = '15px Arial'
-            this.context.fillStyle = 'red'
+            this.context.fillStyle = '#ff0000'
             this.context.fillText(this.canvas.height, 20, this.canvas.height / 2)
             this.context.fillText(this.canvas.width, this.canvas.width / 2, 20)
             console.log(this.numberOfCont)
