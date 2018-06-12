@@ -120,7 +120,7 @@ export default {
       selectedOrder: 0,
       editType: 'Rotate',
       containerRotatedBoxes: [],
-      rotationScale: 'FillContainer',
+      editingScale: 'FillContainer',
       numberOfCont: 0,
       loadingGetBoxesAndCont: false,
       EditQueue: 0,
@@ -150,9 +150,9 @@ export default {
     addMouseEvent (canvas) {
       console.log(this.numberOfCont)
       if (this.numberOfCont === 1) {
-        this.rotationScale = 'FillContainer'
+        this.editingScale = 'FillContainer'
       } else if (this.numberOfCont === 2) {
-        this.rotationScale = 'GetSolution'
+        this.editingScale = 'GetSolution'
       }
       canvas.addEventListener('click', (evt) => {
         console.log('Container data')
@@ -410,7 +410,7 @@ export default {
           let obj = {
             Boxes: this.containerRotatedBoxes
           }
-          if (type !== 'FillContainer') {
+          if (this.editingScale !== 'FillContainer') {
             this.container.forEach((container, i) => {
               this.containerCopy[i] = parseInt(container) + 1
             })
@@ -434,7 +434,7 @@ export default {
               value: parseInt(this.container) + 1
             })
           }
-          axios.post('http://52.157.147.48:80/PackingAPI/api/v1/' + type, obj).then((response) => {
+          axios.post('http://52.157.147.48:80/PackingAPI/api/v1/' + this.editingScale, obj).then((response) => {
             this.containerData = response.data
             Object.assign({}, this.containerData)
             this.containerData.forEach((oneContainerData) => {
