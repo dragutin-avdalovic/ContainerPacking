@@ -127,7 +127,8 @@ export default {
       editFinished: false,
       filteredObject: {},
       firstForEdit: {},
-      secondForEdit: {}
+      secondForEdit: {},
+      containerSwapedBoxes: {}
     }
   },
   mounted () {
@@ -158,46 +159,12 @@ export default {
         console.log(this.containerData)
         _.forEach(this.containerData, (container, index) => {
           console.log(container)
-          console.log(_.isEmpty(this.firstForEdit))
-
-          console.log(_.isEmpty(this.secondForEdit))
           if (_.isEmpty(this.firstForEdit)) {
             this.firstForEdit = _.find(container.PackedBoxes, { 'EditQueue': 1 })
           } else if (_.isEmpty(this.secondForEdit)) {
             this.secondForEdit = _.find(container.PackedBoxes, { 'EditQueue': 2 })
           }
         })
-        if (!_.isEmpty(this.firstForEdit) && !_.isEmpty(this.secondForEdit)) {
-          _.forEach(this.containerData, (container, index) => {
-            console.log(container)
-            _.forEach(container.PackedBoxes, (box, index) => {
-              console.log(box.ID)
-              if (box.ID === this.firstForEdit.ID) {
-                console.log('prvi')
-                box.EditQueue = 1
-                box.H = this.secondForEdit.H
-                box.ID = this.secondForEdit.ID
-                box.Rotated = this.secondForEdit.Rotated
-                box.W = this.secondForEdit.W
-                box.X = this.secondForEdit.X
-                box.Y = this.secondForEdit.Y
-              } else if (box.ID === this.secondForEdit.ID) {
-                console.log('drugi')
-                box.EditQueue = 2
-                box.H = this.firstForEdit.H
-                box.ID = this.firstForEdit.ID
-                box.Rotated = this.firstForEdit.Rotated
-                box.W = this.firstForEdit.W
-                box.X = this.firstForEdit.X
-                box.Y = this.firstForEdit.Y
-              }
-            })
-          })
-          console.log('Swapped cont data')
-          console.log(this.firstForEdit)
-          console.log(this.secondForEdit)
-          console.log(this.containerData)
-        }
         let mousePos = this.getMousePos(evt, canvas)
         if (this.editType === 'Rotate') {
           this.containerData.forEach((oneContainerData) => {
@@ -496,6 +463,30 @@ export default {
       } else {
         this.notifyChooseContainer()
       }
+    },
+    refillContainerSwap (type) {
+      if (!_.isEmpty(this.firstForEdit) && !_.isEmpty(this.secondForEdit)) {
+        _.forEach(this.containerData, (container, index) => {
+          console.log(container)
+          var temp = {}
+          Object.assign(temp, this.firstForEdit)
+          _.forEach(container.PackedBoxes, (box, index) => {
+            console.log(box.ID)
+            if (box.ID === this.firstForEdit.ID) {
+              console.log('prvi')
+              Object.assign(box, this.secondForEdit)
+            } else if (box.ID === this.secondForEdit.ID) {
+              console.log('drugi')
+              Object.assign(box, temp)
+            }
+          })
+        })
+        console.log('Swapped cont data')
+        console.log(this.containerData)
+      }
+      _.forEach(this.containerData, (container, index) => {
+        console.log(container)
+      })
     },
     clearSelection () {
       this.value = []
