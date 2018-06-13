@@ -57,7 +57,7 @@
         </el-col>
         <el-col class="row-bg-center">
           <span class="chooseContainer">Choose container:</span>
-          <el-select style="float: right;" v-model="container" multiple placeholder="Select container">
+          <el-select v-on:change="drawSelectedContainers" style="float: right;" v-model="container" multiple placeholder="Select container">
             <el-option
               v-for="(item, index) in containers"
               :key="item.ID"
@@ -537,17 +537,21 @@ export default {
       this.EditQueue = 0
       this.clearContainers()
     },
-    drawContainer () {
-      this.$refs.myCanvas.width = this.containers[this.container].Width
-      this.$refs.myCanvas.height = this.containers[this.container].Height
+    drawContainer (containerIndex) {
+      this.canvas = document.getElementById('canvas' + containerIndex)
+      this.addMouseEvent(this.canvas)
+      this.canvas.width = this.containers[containerIndex].Width
+      this.canvas.height = this.containers[containerIndex].Height
+      this.context = document.getElementById('canvas' + containerIndex).getContext('2d')
       this.context.font = '15px Arial'
-      this.context.fillStyle = 'red'
-      this.context.fillText(this.$refs.myCanvas.height, 20, this.$refs.myCanvas.height / 2)
-      this.context.fillText(this.$refs.myCanvas.width, this.$refs.myCanvas.width / 2, 20)
+      this.context.fillStyle = '#ff0000'
+      this.context.fillText(this.canvas.height, 20, this.canvas.height / 2)
+      this.context.fillText(this.canvas.width, this.canvas.width / 2, 20)
     },
     drawContainers () {
       var index = ''
       this.numberOfCont = 0
+      console.log(this.container)
       setTimeout(() => {
         for (var key in this.$refs) {
           if (this.$refs.hasOwnProperty(key)) {
@@ -567,6 +571,9 @@ export default {
         }
       }, 1000)
       console.log(this.numberOfCont)
+    },
+    drawSelectedContainers () {
+      this.drawContainer(this.container)
     },
     clearContainers () {
       var index = ''
