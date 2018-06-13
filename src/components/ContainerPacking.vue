@@ -160,12 +160,6 @@ export default {
       }
     },
     addMouseEvent (canvas) {
-      console.log(this.numberOfCont)
-      if (this.numberOfCont === 1) {
-        this.editingScale = 'FillContainer'
-      } else if (this.numberOfCont === 2) {
-        this.editingScale = 'GetSolution'
-      }
       canvas.addEventListener('click', (evt) => {
         console.log('Container data')
         console.log(this.containerData)
@@ -408,31 +402,13 @@ export default {
           let obj = {
             Boxes: this.containerRotatedBoxes
           }
-          if (this.editingScale !== 'FillContainer') {
-            this.container.forEach((container, i) => {
-              this.containerCopy[i] = parseInt(container) + 1
-            })
-            Object.defineProperty(obj, 'Rotation', {
-              enumerable: true,
-              configurable: true,
-              writable: true,
-              value: true
-            })
-            Object.defineProperty(obj, 'ContainerIDs', {
-              enumerable: true,
-              configurable: true,
-              writable: true,
-              value: this.containerCopy
-            })
-          } else {
-            Object.defineProperty(obj, 'ContainerID', {
-              enumerable: true,
-              configurable: true,
-              writable: true,
-              value: parseInt(this.container) + 1
-            })
-          }
-          axios.post('http://52.157.147.48:80/PackingAPI/api/v1/' + this.editingScale, obj).then((response) => {
+          Object.defineProperty(obj, 'ContainerID', {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: parseInt(this.container) + 1
+          })
+          axios.post('http://52.157.147.48:80/PackingAPI/api/v1/FillContainer', obj).then((response) => {
             this.containerData = response.data
             Object.assign({}, this.containerData)
             this.containerData.forEach((oneContainerData) => {
@@ -498,31 +474,13 @@ export default {
             let obj = {
               Boxes: this.containerSwapedBoxes
             }
-            if (this.editingScale !== 'FillContainer') {
-              this.container.forEach((container, i) => {
-                this.containerCopy[i] = parseInt(container) + 1
-              })
-              Object.defineProperty(obj, 'Rotation', {
-                enumerable: true,
-                configurable: true,
-                writable: true,
-                value: true
-              })
-              Object.defineProperty(obj, 'ContainerIDs', {
-                enumerable: true,
-                configurable: true,
-                writable: true,
-                value: this.containerCopy
-              })
-            } else {
-              Object.defineProperty(obj, 'ContainerID', {
-                enumerable: true,
-                configurable: true,
-                writable: true,
-                value: parseInt(this.container) + 1
-              })
-            }
-            axios.post('http://52.157.147.48:80/PackingAPI/api/v1/' + this.editingScale, obj).then((response) => {
+            Object.defineProperty(obj, 'ContainerID', {
+              enumerable: true,
+              configurable: true,
+              writable: true,
+              value: parseInt(this.container) + 1
+            })
+            axios.post('http://52.157.147.48:80/PackingAPI/api/v1/FillContainer', obj).then((response) => {
               this.containerData = response.data
               Object.assign({}, this.containerData)
               this.containerData.forEach((oneContainerData) => {
