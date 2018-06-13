@@ -551,21 +551,19 @@ export default {
       this.EditQueue = 0
       this.clearContainers()
     },
-    deleteContainers () {
-      var canvasDiv = document.getElementsByClassName('canvas-div')
-      canvasDiv.html = ''
-    },
     drawContainer (containerIndex) {
-      this.deleteContainers()
-      this.canvas = document.getElementById('canvas' + containerIndex)
-      this.addMouseEvent(this.canvas)
-      this.canvas.width = this.containers[containerIndex].Width
-      this.canvas.height = this.containers[containerIndex].Height
-      this.context = document.getElementById('canvas' + containerIndex).getContext('2d')
-      this.context.font = '15px Arial'
-      this.context.fillStyle = '#ff0000'
-      this.context.fillText(this.canvas.height, 20, this.canvas.height / 2)
-      this.context.fillText(this.canvas.width, this.canvas.width / 2, 20)
+      for (var key in this.$refs) {
+        if (this.$refs.hasOwnProperty(key)) {
+          let index = key.split('s')[1]
+          if (parseInt(index) !== containerIndex) {
+            this.canvas = document.getElementById(key)
+            this.canvas.style.display = 'none'
+          } else {
+            this.canvas = document.getElementById(key)
+            this.canvas.style.display = 'block'
+          }
+        }
+      }
     },
     drawContainers () {
       var index = ''
