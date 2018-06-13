@@ -161,7 +161,7 @@ export default {
     },
     addMouseEvent (canvas) {
       canvas.addEventListener('click', (evt) => {
-        console.log('Container data')
+        console.log('Container data - before editing')
         console.log(this.containerData)
         let mousePos = this.getMousePos(evt, canvas)
         if (this.editType === 'Rotate') {
@@ -185,21 +185,26 @@ export default {
           })
         } else if (this.editType === 'Swap') {
           if (!this.editFinished) {
-            console.log(this.containerData)
             this.containerData.forEach((oneContainerData) => {
               oneContainerData.PackedBoxes.map(el => {
                 if ((mousePos.x > el.X && mousePos.x < (el.X + el.W)) && (mousePos.y > el.Y && mousePos.y < (el.Y + el.H))) {
-                  console.log(this.EditQueue)
                   if (parseInt(this.EditQueue) === 1) {
-                    console.log('thu sam')
                     this.editFinished = true
                   }
                   this.EditQueue += 1
                   el.EditQueue = this.EditQueue
                   let result = this.containerRotatedBoxes.find(function (element) { return element.BoxID === el.ID })
                   if (result) {
-                    console.log('vec u nizu')
+                    console.log('vec u nizu paleta')
                     result.EditQueue = this.EditQueue
+                    _.forEach(this.containerData, (container, index) => {
+                      console.log(container)
+                      if (_.isEmpty(this.firstForEdit)) {
+                        this.firstForEdit = _.find(container.PackedBoxes, { 'EditQueue': 1 })
+                      } else if (_.isEmpty(this.secondForEdit)) {
+                        this.secondForEdit = _.find(container.PackedBoxes, { 'EditQueue': 2 })
+                      }
+                    })
                   } else {
                     console.log('nema u nizu paleta')
                     this.containerRotatedBoxes.push({BoxID: el.ID, Rotated: el.Rotated})
@@ -440,76 +445,78 @@ export default {
         }
       } else if (type === 'Swap') {
         this.containerSwapedBoxes = []
-        _.forEach(this.containerData, (container, index) => {
-          console.log(container)
-          if (_.isEmpty(this.firstForEdit)) {
-            this.firstForEdit = _.find(container.PackedBoxes, { 'EditQueue': 1 })
-          } else if (_.isEmpty(this.secondForEdit)) {
-            this.secondForEdit = _.find(container.PackedBoxes, { 'EditQueue': 2 })
-          }
-        })
         console.log('prvi sam')
         console.log(this.firstForEdit)
         console.log('drugi sam')
         console.log(this.secondForEdit)
-        if (!_.isEmpty(this.firstForEdit) && !_.isEmpty(this.secondForEdit)) {
-          _.forEach(this.containerData, (container, index) => {
-            console.log(container)
-            var temp = {}
-            Object.assign(temp, this.firstForEdit)
-            console.log('indeks prvog')
-            console.log(container.PackedBoxes.indexOf(this.firstForEdit))
-            console.log('indeks drugog')
-            console.log(container.PackedBoxes.indexOf(this.secondForEdit))
-            console.log('zamjena izvrsena')
-            console.log(this.swap(container.PackedBoxes, container.PackedBoxes.indexOf(this.firstForEdit), container.PackedBoxes.indexOf(this.secondForEdit)))
+        _.forEach(this.containerData, (container, index) => {
+          console.log(container)
+          console.log('indeks prvog')
+          let firstIndex = container.PackedBoxes.indexOf(this.firstForEdit)
+          console.log(firstIndex)
+          console.log('indeks drugog')
+          let secondIndex = container.PackedBoxes.indexOf(this.firstForEdit)
+          console.log(secondIndex)
+          if (firstIndex !== -1 && secondIndex !== -1) {
+            this.swap(container.PackedBoxes, container.PackedBoxes.indexOf(this.firstForEdit), container.PackedBoxes.indexOf(this.secondForEdit))
             _.forEach(container.PackedBoxes, (box, index) => {
               this.containerSwapedBoxes.push({'BoxID': box.ID, 'Rotated': box.Rotated})
             })
-          })
-          console.log('new cont data')
-          console.log(this.containerSwapedBoxes)
-          if (String(this.container).valueOf() !== '') {
-            this.clearContainers()
-            let obj = {
-              Boxes: this.containerSwapedBoxes
-            }
-            Object.defineProperty(obj, 'ContainerID', {
-              enumerable: true,
-              configurable: true,
-              writable: true,
-              value: parseInt(this.container) + 1
-            })
-            axios.post('http://52.157.147.48:80/PackingAPI/api/v1/FillContainer', obj).then((response) => {
-              this.containerData = response.data
-              Object.assign({}, this.containerData)
-              this.containerData.forEach((oneContainerData) => {
-                oneContainerData.PackedBoxes.map(box => {
-                  Object.defineProperty(box, 'Rotated', {
-                    enumerable: true,
-                    configurable: true,
-                    writable: true,
-                    value: false
-                  })
-                  box.W /= 10
-                  box.H /= 10
-                  box.X /= 10
-                  box.Y /= 10
-                  return box
-                })
-              })
-              this.createCustomBoxesAndContainers(this.containerData, this.$refs)
-              this.containerRotatedBoxes.forEach((oneBox) => {
-                oneBox.Rotated = false
-              })
-              this.EditQueue = 0
-              this.editFinished = false
-            }).catch(function (error) {
-              console.log(error)
-            })
-          } else {
-            this.notifyChooseContainer()
+            console.log('swapped')
           }
+        })
+        console.log('new cont data')
+        console.log(this.containerSwapedBoxes)
+        if (String(this.container).valueOf() !== '') {
+          this.clearContainers()
+          let obj = {
+            Boxes: this.containerSwapedBoxes
+          }
+          Object.defineProperty(obj, 'ContainerID', {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: parseInt(this.container) + 1
+          })
+          axios.post('http://52.157.147.48:80/PackingAPI/api/v1/FillContainer', obj).then((response) => {
+            this.containerData = response.data
+            this.firstForEdit = {}
+            this.secondForEdit = {}
+            console.log('tuj sam')
+            console.log(this.containerData)
+            Object.assign({}, this.containerData)
+            this.containerData.forEach((oneContainerData) => {
+              oneContainerData.PackedBoxes.map(box => {
+                Object.defineProperty(box, 'Rotated', {
+                  enumerable: true,
+                  configurable: true,
+                  writable: true,
+                  value: false
+                })
+                Object.defineProperty(box, 'EditQueue', {
+                  enumerable: true,
+                  configurable: true,
+                  writable: true,
+                  value: 0
+                })
+                box.W /= 10
+                box.H /= 10
+                box.X /= 10
+                box.Y /= 10
+                return box
+              })
+            })
+            this.containerRotatedBoxes.forEach((oneBox) => {
+              oneBox.Rotated = false
+            })
+            this.createCustomBoxesAndContainers(this.containerData, this.$refs)
+            this.EditQueue = 0
+            this.editFinished = false
+          }).catch(function (error) {
+            console.log(error)
+          })
+        } else {
+          this.notifyChooseContainer()
         }
       }
     },
