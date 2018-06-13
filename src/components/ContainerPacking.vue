@@ -136,6 +136,9 @@ export default {
     }
   },
   mounted () {
+  //    _.remove(obj.subTopics, {
+  //      subTopicId: stToDelete
+  //    });
   },
   methods: {
     clearEdit () {
@@ -463,6 +466,14 @@ export default {
               this.containerSwapedBoxes.push({'BoxID': box.ID, 'Rotated': box.Rotated})
             })
             console.log('swapped')
+          } else if (firstIndex !== -1 || secondIndex !== -1) {
+            this.$notify.warning({
+              title: 'Warning',
+              message: 'Please select two boxes to swap'
+            })
+            this.createCustomBoxesAndContainers(this.containerData, this.$refs)
+            this.EditQueue = 0
+            this.editFinished = false
           }
         })
         console.log('new cont data')
@@ -554,7 +565,7 @@ export default {
             console.log(this.numberOfCont)
           }
         }
-      }, 5000)
+      }, 1000)
       console.log(this.numberOfCont)
     },
     clearContainers () {
