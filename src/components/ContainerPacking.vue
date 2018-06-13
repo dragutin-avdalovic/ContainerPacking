@@ -56,8 +56,8 @@
           </el-transfer>
         </el-col>
         <el-col class="row-bg-center">
-          <span class="chooseContainer">Choose container:</span>
-          <el-select v-on:change="drawSelectedContainers" style="float: right;" v-model="container" multiple placeholder="Select container">
+          <span class="chooseContainer">Choose container to fill:</span>
+          <el-select style="float: right;" v-model="container" multiple placeholder="Select container">
             <el-option
               v-for="(item, index) in containers"
               :key="item.ID"
@@ -82,6 +82,19 @@
         </canvas>
       </div>
     </el-row>
+    <el-row  class="row-bg-center">
+      <span class="chooseContainer">Choose container to edit:</span>
+      <el-select v-on:change="drawContainer(containerForEdit)" style="float: right;" v-model="containerForEdit" placeholder="Select container">
+        <el-option
+          v-for="(item, index) in containers"
+          :key="item.ID"
+          :value="index"
+        >
+          <span style="float: left; color: #0000ff">{{ item.ID }}</span>
+          <span style="float: right; color: #ff0000; font-size: 13px">W: {{ item.Width }}, H: {{ item.Height }}, T: {{  item.Type}}</span>
+        </el-option>
+      </el-select>
+    </el-row >
     <el-row class="row-bg-center">
       <el-col :xl="12" style="justify-content: flex-end; display: flex;padding-right: 2em;">
         <el-radio v-model="editType" label="Swap" border v-on:change="clearEdit">Swap</el-radio>
@@ -132,7 +145,8 @@ export default {
       filteredObject: {},
       firstForEdit: {},
       secondForEdit: {},
-      containerSwapedBoxes: []
+      containerSwapedBoxes: [],
+      containerForEdit: null
     }
   },
   mounted () {
@@ -537,7 +551,12 @@ export default {
       this.EditQueue = 0
       this.clearContainers()
     },
+    deleteContainers () {
+      var canvasDiv = document.getElementsByClassName('canvas-div')
+      canvasDiv.html = ''
+    },
     drawContainer (containerIndex) {
+      this.deleteContainers()
       this.canvas = document.getElementById('canvas' + containerIndex)
       this.addMouseEvent(this.canvas)
       this.canvas.width = this.containers[containerIndex].Width
