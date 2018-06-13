@@ -44,36 +44,45 @@
           <el-button :loading="loadingGetBoxesAndCont" type="warning" v-on:click="getBoxesAndContainers(type, filename)">Get containers and pallets</el-button>
         </el-col>
         </el-col>
-        <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
-          <el-col class="row-bg-center">
-            <el-transfer
-              v-model="value"
-              :data="data"
-              :titles="titles">
-            </el-transfer>
-          </el-col>
-          <el-col class="row-bg-center">
-            <span class="chooseContainer">Choose container:</span>
-            <el-select style="float: right;" v-model="container" multiple placeholder="Select container">
-              <el-option
-                v-for="(item, index) in containers"
-                :key="item.ID"
-                :value="index"
-              >
-                <span style="float: left; color: #0000ff">{{ item.ID }}</span>
-                <span style="float: right; color: #ff0000; font-size: 13px">W: {{ item.Width }}, H: {{ item.Height }}, T: {{  item.Type}}</span>
-              </el-option>
-            </el-select>
-          </el-col>
-          <el-col class="row-bg-center">
-            <el-button type="danger" v-on:click="clearSelection()">Clear selection</el-button>
-            <el-button type="primary" v-on:click="fillContainer('FillContainer')">Fill the container</el-button>
-            <el-button type="success" v-on:click="fillContainer('GetSolution')">Get solution</el-button>
-          </el-col>
+      </el-col>
+    </el-row>
+    <el-row class="row-bg-center">
+      <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
+        <el-col class="row-bg-center">
+          <el-transfer
+            v-model="value"
+            :data="data"
+            :titles="titles">
+          </el-transfer>
+        </el-col>
+        <el-col class="row-bg-center">
+          <span class="chooseContainer">Choose container:</span>
+          <el-select style="float: right;" v-model="container" multiple placeholder="Select container">
+            <el-option
+              v-for="(item, index) in containers"
+              :key="item.ID"
+              :value="index"
+            >
+              <span style="float: left; color: #0000ff">{{ item.ID }}</span>
+              <span style="float: right; color: #ff0000; font-size: 13px">W: {{ item.Width }}, H: {{ item.Height }}, T: {{  item.Type}}</span>
+            </el-option>
+          </el-select>
+        </el-col>
+        <el-col class="row-bg-center">
+          <el-button type="danger" v-on:click="clearSelection()">Clear selection</el-button>
+          <el-button type="primary" v-on:click="fillContainer('FillContainer')">Fill the container</el-button>
+          <el-button type="success" v-on:click="fillContainer('GetSolution')">Get solution</el-button>
         </el-col>
       </el-col>
     </el-row>
-    <el-col class="row-bg-center">
+    <el-row class="row-bg-center-canvas" v-for="(container, index) in containers" v-bind:key="index">
+      <div class="canvas-div">
+        <canvas :id="'canvas' + index" :ref="'canvas' + index" width="0" height="0" style="border:1px solid #c08d13 ;">
+          Your browser does not support the HTML5 canvas tag.
+        </canvas>
+      </div>
+    </el-row>
+    <el-row class="row-bg-center">
       <el-col :xl="12" style="justify-content: flex-end; display: flex;padding-right: 2em;">
         <el-radio v-model="editType" label="Swap" border v-on:change="clearEdit">Swap</el-radio>
         <el-radio v-model="editType" label="Rotate" border v-on:change="clearEdit">Rotate</el-radio>
@@ -81,13 +90,6 @@
       <el-col :xl="12" style="justify-content: flex-start; display: flex;">
         <el-button type="warning" v-on:click="refillContainer(editType)">{{editType}} pallets</el-button>
       </el-col>
-      </el-col>
-    <el-row class="row-bg-center-canvas" v-for="(container, index) in containers" v-bind:key="index">
-      <div class="canvas-div">
-      <canvas :id="'canvas' + index" :ref="'canvas' + index" width="0" height="0" style="border:1px solid #c08d13 ;">
-        Your browser does not support the HTML5 canvas tag.
-      </canvas>
-    </div>
     </el-row>
   </div>
 </template>
@@ -140,6 +142,14 @@ export default {
       console.log('cistim')
       this.editFinished = false
       this.EditQueue = 0
+      _.forEach(this.containerData, (container, index) => {
+        console.log(container)
+        _.forEach(container.PackedBoxes, (box, index) => {
+          box.Rotated = false
+          box.EditQueue = 0
+        })
+      })
+      this.clearContainers()
       this.createCustomBoxesAndContainers(this.containerData, this.$refs)
     },
     getMousePos (evt, canvas) {
