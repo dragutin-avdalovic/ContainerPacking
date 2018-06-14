@@ -571,7 +571,7 @@ export default {
             console.log(this.canvas)
             this.removeMouseEvent(this.canvas)
             this.canvas.style.display = 'none'
-          } else {
+          } else if (parseInt(index) === containerIndex) {
             console.log('tuj sam a add listener')
             console.log(this.canvas)
             this.canvas = document.getElementById(key)
