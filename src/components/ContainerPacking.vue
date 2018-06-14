@@ -176,70 +176,83 @@ export default {
         y: evt.clientY - rect.top
       }
     },
-    addMouseEvent (canvas) {
-      canvas.addEventListener('click', (evt) => {
-        console.log('Container data - before editing')
-        console.log(this.containerData)
-        let mousePos = this.getMousePos(evt, canvas)
-        if (this.editType === 'Rotate') {
+    handleEditCanvas (evt) {
+        canv =
+      console.log('Container data - before editing')
+      console.log(this.containerData)
+      let mousePos = this.getMousePos(evt, canvas)
+      if (this.editType === 'Rotate') {
+        this.containerData.forEach((oneContainerData) => {
+          oneContainerData.PackedBoxes.map(el => {
+            if ((mousePos.x > el.X && mousePos.x < (el.X + el.W)) && (mousePos.y > el.Y && mousePos.y < (el.Y + el.H))) {
+              el.Rotated = true
+              let result = this.containerRotatedBoxes.find(function (element) { return element.BoxID === el.ID })
+              if (result) {
+                console.log('vec u nizu')
+                result.Rotated = el.Rotated
+              } else {
+                console.log('nema u nizu paleta')
+                this.containerRotatedBoxes.push({BoxID: el.ID, Rotated: el.Rotated})
+              }
+            } else {
+              el.Rotated = false
+            }
+            return el
+          })
+        })
+      } else if (this.editType === 'Swap') {
+        if (!this.editFinished) {
           this.containerData.forEach((oneContainerData) => {
             oneContainerData.PackedBoxes.map(el => {
               if ((mousePos.x > el.X && mousePos.x < (el.X + el.W)) && (mousePos.y > el.Y && mousePos.y < (el.Y + el.H))) {
-                el.Rotated = true
+                if (parseInt(this.EditQueue) === 1) {
+                  this.editFinished = true
+                }
+                this.EditQueue += 1
+                el.EditQueue = this.EditQueue
                 let result = this.containerRotatedBoxes.find(function (element) { return element.BoxID === el.ID })
                 if (result) {
-                  console.log('vec u nizu')
-                  result.Rotated = el.Rotated
+                  console.log('vec u nizu paleta')
+                  result.EditQueue = this.EditQueue
+                  _.forEach(this.containerData, (container, index) => {
+                    console.log(container)
+                    if (_.isEmpty(this.firstForEdit)) {
+                      this.firstForEdit = _.find(container.PackedBoxes, { 'EditQueue': 1 })
+                    } else if (_.isEmpty(this.secondForEdit)) {
+                      this.secondForEdit = _.find(container.PackedBoxes, { 'EditQueue': 2 })
+                    }
+                  })
                 } else {
                   console.log('nema u nizu paleta')
                   this.containerRotatedBoxes.push({BoxID: el.ID, Rotated: el.Rotated})
                 }
               } else {
-                el.Rotated = false
               }
               return el
             })
           })
-        } else if (this.editType === 'Swap') {
-          if (!this.editFinished) {
-            this.containerData.forEach((oneContainerData) => {
-              oneContainerData.PackedBoxes.map(el => {
-                if ((mousePos.x > el.X && mousePos.x < (el.X + el.W)) && (mousePos.y > el.Y && mousePos.y < (el.Y + el.H))) {
-                  if (parseInt(this.EditQueue) === 1) {
-                    this.editFinished = true
-                  }
-                  this.EditQueue += 1
-                  el.EditQueue = this.EditQueue
-                  let result = this.containerRotatedBoxes.find(function (element) { return element.BoxID === el.ID })
-                  if (result) {
-                    console.log('vec u nizu paleta')
-                    result.EditQueue = this.EditQueue
-                    _.forEach(this.containerData, (container, index) => {
-                      console.log(container)
-                      if (_.isEmpty(this.firstForEdit)) {
-                        this.firstForEdit = _.find(container.PackedBoxes, { 'EditQueue': 1 })
-                      } else if (_.isEmpty(this.secondForEdit)) {
-                        this.secondForEdit = _.find(container.PackedBoxes, { 'EditQueue': 2 })
-                      }
-                    })
-                  } else {
-                    console.log('nema u nizu paleta')
-                    this.containerRotatedBoxes.push({BoxID: el.ID, Rotated: el.Rotated})
-                  }
-                } else {
-                }
-                return el
-              })
-            })
-          } else {
-            this.$notify.warning({
-              title: 'Warning',
-              message: 'Only two pallets can be swaped.'
-            })
-          }
+        } else {
+          this.$notify.warning({
+            title: 'Warning',
+            message: 'Only two pallets can be swaped.'
+          })
         }
-        this.createCustomBoxesAndContainers(this.containerData, this.$refs)
-      }, false)
+      }
+      this.createCustomBoxesAndContainers(this.containerData, this.$refs)
+    },
+    addMouseEvent (canvas) {
+        this.globCanv = canv
+      canvas.addEventListener('click', this.handleEditCanvas(evt, canvas), false)
+    },
+    removeMouseEvent (canvas) {
+      console.log('prije uklanjanja eveneta')
+      console.log(canvas)
+      canvas.removeEventListener('click', (evt) => {
+        console.log('unutar uklanjanja eveneta')
+        let mousePos = this.getMousePos(evt, canvas)
+        console.log('Sklanjam')
+        console.log(mousePos)
+      }, true)
     },
     getContainers () {
       axios.get('http://52.157.147.48:80/PackingAPI/api/v1/GetContainers').then((response) => {
@@ -552,15 +565,22 @@ export default {
       this.clearContainers()
     },
     displayContainer (containerIndex) {
+      console.log('uso sam')
       for (var key in this.$refs) {
         if (this.$refs.hasOwnProperty(key)) {
           let index = key.split('s')[1]
           if (parseInt(index) !== containerIndex) {
+            console.log('tuj sam remove listener')
             this.canvas = document.getElementById(key)
+            this.removeMouseEvent(this.canvas)
             this.canvas.style.display = 'none'
           } else {
+            console.log('tuj sam a add listener')
+
             this.canvas = document.getElementById(key)
             this.canvas.style.display = 'block'
+            this.canvas = document.getElementById(key)
+            this.addMouseEvent(this.canvas)
           }
         }
       }
