@@ -178,10 +178,11 @@ export default {
       }
     },
     handleEditCanvas (evt) {
-      var canvas = this.globalCanvasEdit
+      console.log('event')
+      console.log(evt)
       console.log('Container data - before editing')
       console.log(this.containerData)
-      let mousePos = this.getMousePos(evt, canvas)
+      let mousePos = this.getMousePos(evt, this.globalCanvasEdit)
       if (this.editType === 'Rotate') {
         this.containerData.forEach((oneContainerData) => {
           oneContainerData.PackedBoxes.map(el => {
@@ -243,11 +244,11 @@ export default {
     },
     addMouseEvent (canvas) {
       this.globalCanvasEdit = canvas
-      canvas.addEventListener('click', this.handleEditCanvas(evt), false)
+      this.globalCanvasEdit.addEventListener('click', this.handleEditCanvas(event), false)
     },
     removeMouseEvent (canvas) {
       this.globalCanvasEdit = canvas
-      canvas.removeEventListener('click', this.handleEditCanvas(evt), false)
+      this.globalCanvasEdit.removeEventListener('click', this.handleEditCanvas(event), false)
     },
     getContainers () {
       axios.get('http://52.157.147.48:80/PackingAPI/api/v1/GetContainers').then((response) => {
@@ -567,11 +568,12 @@ export default {
           if (parseInt(index) !== containerIndex) {
             console.log('tuj sam remove listener')
             this.canvas = document.getElementById(key)
+            console.log(this.canvas)
             this.removeMouseEvent(this.canvas)
             this.canvas.style.display = 'none'
           } else {
             console.log('tuj sam a add listener')
-
+            console.log(this.canvas)
             this.canvas = document.getElementById(key)
             this.canvas.style.display = 'block'
             this.canvas = document.getElementById(key)
@@ -590,7 +592,6 @@ export default {
             this.numberOfCont = this.numberOfCont + 1
             index = key.split('s')[1]
             this.canvas = document.getElementById(key)
-            this.addMouseEvent(this.canvas)
             this.canvas.width = this.containers[index].Width
             this.canvas.height = this.containers[index].Height
             this.context = document.getElementById(key).getContext('2d')
