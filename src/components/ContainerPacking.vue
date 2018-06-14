@@ -84,7 +84,7 @@
     </el-row>
     <el-row  class="row-bg-center">
       <span class="chooseContainer">Choose container to edit:</span>
-      <el-select v-on:change="drawContainer(containerForEdit)" style="float: right;" v-model="containerForEdit" placeholder="Select container">
+      <el-select v-on:change="displayContainer(containerForEdit)" style="float: right;" v-model="containerForEdit" placeholder="Select container">
         <el-option
           v-for="(item, index) in containers"
           :key="item.ID"
@@ -94,7 +94,7 @@
           <span style="float: right; color: #ff0000; font-size: 13px">W: {{ item.Width }}, H: {{ item.Height }}, T: {{  item.Type}}</span>
         </el-option>
       </el-select>
-    </el-row >
+    </el-row>
     <el-row class="row-bg-center">
       <el-col :xl="12" style="justify-content: flex-end; display: flex;padding-right: 2em;">
         <el-radio v-model="editType" label="Swap" border v-on:change="clearEdit">Swap</el-radio>
@@ -551,7 +551,7 @@ export default {
       this.EditQueue = 0
       this.clearContainers()
     },
-    drawContainer (containerIndex) {
+    displayContainer (containerIndex) {
       for (var key in this.$refs) {
         if (this.$refs.hasOwnProperty(key)) {
           let index = key.split('s')[1]
@@ -581,6 +581,7 @@ export default {
             this.context = document.getElementById(key).getContext('2d')
             this.context.font = '15px Arial'
             this.context.fillStyle = '#ff0000'
+            this.context.fillText('Container: ' + this.numberOfCont, this.canvas.width / 2 - 20, this.canvas.height - 20)
             this.context.fillText(this.canvas.height, 20, this.canvas.height / 2)
             this.context.fillText(this.canvas.width, this.canvas.width / 2, 20)
             console.log(this.numberOfCont)
@@ -590,7 +591,7 @@ export default {
       console.log(this.numberOfCont)
     },
     drawSelectedContainers () {
-      this.drawContainer(this.container)
+      this.displayContainer(this.container)
     },
     clearContainers () {
       var index = ''
