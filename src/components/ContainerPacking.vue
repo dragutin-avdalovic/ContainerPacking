@@ -146,7 +146,8 @@ export default {
       firstForEdit: {},
       secondForEdit: {},
       containerSwapedBoxes: [],
-      containerForEdit: null
+      containerForEdit: null,
+      globalCanvasEdit: null
     }
   },
   mounted () {
@@ -177,7 +178,7 @@ export default {
       }
     },
     handleEditCanvas (evt) {
-        canv =
+      var canvas = this.globalCanvasEdit
       console.log('Container data - before editing')
       console.log(this.containerData)
       let mousePos = this.getMousePos(evt, canvas)
@@ -241,18 +242,12 @@ export default {
       this.createCustomBoxesAndContainers(this.containerData, this.$refs)
     },
     addMouseEvent (canvas) {
-        this.globCanv = canv
-      canvas.addEventListener('click', this.handleEditCanvas(evt, canvas), false)
+      this.globalCanvasEdit = canvas
+      canvas.addEventListener('click', this.handleEditCanvas(evt), false)
     },
     removeMouseEvent (canvas) {
-      console.log('prije uklanjanja eveneta')
-      console.log(canvas)
-      canvas.removeEventListener('click', (evt) => {
-        console.log('unutar uklanjanja eveneta')
-        let mousePos = this.getMousePos(evt, canvas)
-        console.log('Sklanjam')
-        console.log(mousePos)
-      }, true)
+      this.globalCanvasEdit = canvas
+      canvas.removeEventListener('click', this.handleEditCanvas(evt), false)
     },
     getContainers () {
       axios.get('http://52.157.147.48:80/PackingAPI/api/v1/GetContainers').then((response) => {
