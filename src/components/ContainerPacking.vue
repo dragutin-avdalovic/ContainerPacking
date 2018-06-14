@@ -147,7 +147,9 @@ export default {
       secondForEdit: {},
       containerSwapedBoxes: [],
       containerForEdit: null,
-      globalCanvasEdit: null
+      globalCanvasEdit: null,
+      arrayOfCanvases: [],
+      previousEdited: null
     }
   },
   mounted () {
@@ -178,9 +180,6 @@ export default {
       }
     },
     handleEditCanvas (evt) {
-      console.log('event')
-      console.log(evt)
-      console.log('Container data - before editing')
       console.log(this.containerData)
       let mousePos = this.getMousePos(evt, this.globalCanvasEdit)
       if (this.editType === 'Rotate') {
@@ -241,14 +240,6 @@ export default {
         }
       }
       this.createCustomBoxesAndContainers(this.containerData, this.$refs)
-    },
-    addMouseEvent (canvas) {
-      this.globalCanvasEdit = canvas
-      this.globalCanvasEdit.addEventListener('click', this.handleEditCanvas(event), false)
-    },
-    removeMouseEvent (canvas) {
-      this.globalCanvasEdit = canvas
-      this.globalCanvasEdit.removeEventListener('click', this.handleEditCanvas(event), false)
     },
     getContainers () {
       axios.get('http://52.157.147.48:80/PackingAPI/api/v1/GetContainers').then((response) => {
@@ -561,28 +552,17 @@ export default {
       this.clearContainers()
     },
     displayContainer (containerIndex) {
-      console.log('uso sam')
-      for (var key in this.$refs) {
-        if (this.$refs.hasOwnProperty(key)) {
-          let index = key.split('s')[1]
-          if (parseInt(index) !== containerIndex) {
-            console.log('tuj sam remove listener')
-            this.canvas = document.getElementById(key)
-            console.log(this.canvas)
-            this.removeMouseEvent(this.canvas)
-            this.canvas.style.display = 'none'
-          } else if (parseInt(index) === containerIndex) {
-            console.log('tuj sam a add listener')
-            console.log(this.canvas)
-            this.canvas = document.getElementById(key)
-            this.canvas.style.display = 'block'
-            this.canvas = document.getElementById(key)
-            this.addMouseEvent(this.canvas)
-          }
-        }
+      if (this.previousEdited) {
+        console.log('have canvas')
+        this.globalCanvasEdit = this.arrayOfCanvases[this.previousEdited]
+        this.globalCanvasEdit.removeEventListener('click', this.handleEditCanvas, false)
       }
+      this.previousEdited = containerIndex
+      this.globalCanvasEdit = this.arrayOfCanvases[containerIndex]
+      this.globalCanvasEdit.addEventListener('click', this.handleEditCanvas, false)
     },
     drawContainers () {
+      this.arrayOfCanvases = []
       var index = ''
       this.numberOfCont = 0
       console.log(this.container)
@@ -592,6 +572,7 @@ export default {
             this.numberOfCont = this.numberOfCont + 1
             index = key.split('s')[1]
             this.canvas = document.getElementById(key)
+            this.arrayOfCanvases.push(this.canvas)
             this.canvas.width = this.containers[index].Width
             this.canvas.height = this.containers[index].Height
             this.context = document.getElementById(key).getContext('2d')
