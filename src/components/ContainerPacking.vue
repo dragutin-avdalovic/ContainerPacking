@@ -108,52 +108,18 @@
 </template>
 
 <script>
+import { definitions } from '@/helpers/definitions'
+import {} from '@/helpers/boxFunctions'
+import {} from '@/helpers/containerFunctions'
+
 import axios from 'axios'
 import _ from 'lodash'
 
 export default {
   name: 'ContainerPacking',
+  components: {},
   data () {
-    return {
-      data: [],
-      boxes: [],
-      containers: [],
-      containerBoxes: [],
-      value: [],
-      containerData: [],
-      titles: ['Pallets', 'Selected Pallets'],
-      canvas: [],
-      context: [],
-      container: '',
-      containerCopy: [],
-      shipping: '',
-      type: null,
-      shippingTitles: ['By Sea', 'By Truck', 'By Plane', 'Articulated vehicle'],
-      filename: '',
-      filenames: [],
-      contextArray: [],
-      fileList: [],
-      canvases: [],
-      selectedOrder: 0,
-      editType: 'Rotate',
-      containerRotatedBoxes: [],
-      editingScale: 'FillContainer',
-      numberOfCont: 0,
-      loadingGetBoxesAndCont: false,
-      EditQueue: 0,
-      editFinished: false,
-      filteredObject: {},
-      firstForEdit: {},
-      secondForEdit: {},
-      containerSwapedBoxes: [],
-      containerForEdit: null,
-      globalCanvasEdit: null
-    }
-  },
-  mounted () {
-  //    _.remove(obj.subTopics, {
-  //      subTopicId: stToDelete
-  //    });
+    return definitions
   },
   methods: {
     clearEdit () {
@@ -171,7 +137,7 @@ export default {
       this.createCustomBoxesAndContainers(this.containerData, this.$refs)
     },
     getMousePos (evt, canvas) {
-      var rect = canvas.getBoundingClientRect()
+      const rect = canvas.getBoundingClientRect()
       return {
         x: evt.clientX - rect.left,
         y: evt.clientY - rect.top
@@ -296,9 +262,9 @@ export default {
       })
     },
     createCustomBoxesAndContainers (containersAndBoxesArray, refs) {
-      var indexOfCanvas = ''
+      let indexOfCanvas = ''
       containersAndBoxesArray.forEach((oneContainerBoxArray) => {
-        for (var key in refs) {
+        for (const key in refs) {
           indexOfCanvas = parseInt(key.split('s')[1]) + 1
           if (String(indexOfCanvas) === oneContainerBoxArray.ContainerID) {
             this.context = document.getElementById(key).getContext('2d')
@@ -562,7 +528,7 @@ export default {
     },
     displayContainer (containerIndex) {
       console.log('uso sam')
-      for (var key in this.$refs) {
+      for (const key in this.$refs) {
         if (this.$refs.hasOwnProperty(key)) {
           let index = key.split('s')[1]
           if (parseInt(index) !== containerIndex) {
@@ -583,11 +549,11 @@ export default {
       }
     },
     drawContainers () {
-      var index = ''
+      let index = ''
       this.numberOfCont = 0
       console.log(this.container)
       setTimeout(() => {
-        for (var key in this.$refs) {
+        for (const key in this.$refs) {
           if (this.$refs.hasOwnProperty(key)) {
             this.numberOfCont = this.numberOfCont + 1
             index = key.split('s')[1]
@@ -610,8 +576,8 @@ export default {
       this.displayContainer(this.container)
     },
     clearContainers () {
-      var index = ''
-      for (var key in this.$refs) {
+      let index = ''
+      for (const key in this.$refs) {
         if (this.$refs.hasOwnProperty(key)) {
           index = key.split('s')[1]
           this.canvas = document.getElementById(key)
@@ -635,7 +601,7 @@ export default {
       })
     },
     swap (arr, index1, index2) {
-      var temp = arr[index2]
+      const temp = arr[index2]
       arr[index2] = arr[index1]
       arr[index1] = temp
       return arr
@@ -643,7 +609,7 @@ export default {
   }
 }
 </script>
-<!-- Add "scoped" attribute to limit CSS to this component only -->
+
 <style>
 .grid-content {
   min-height: 36px;
@@ -663,27 +629,22 @@ export default {
   overflow-x: auto;
   margin: 2% 2%;
 }
-.canvas-div
-{
+.canvas-div {
   margin: 1em;
   width: 100%;
 }
-.chooseContainer
-{
+.chooseContainer {
   font-size: 1em;
   color: dodgerblue;
   padding-right: 1em;
 }
-.chooseType
-{
+.chooseType {
   font-size: 1em;
   color: green;
   padding-right: 0.5em;
 }
-.main
-{
+.main {
     padding-top: 2em;
     padding-bottom: 2em;
 }
-
 </style>
