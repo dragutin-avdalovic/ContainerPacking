@@ -149,6 +149,7 @@ export default {
       containerForEdit: null,
       globalCanvasEdit: null,
       arrayOfCanvases: [],
+      currentEdit: null,
       previousEdited: null
     }
   },
@@ -552,13 +553,13 @@ export default {
       this.clearContainers()
     },
     displayContainer (containerIndex) {
-      if (this.previousEdited) {
+      if (this.previousEdited !== null) {
         console.log('have canvas')
         this.globalCanvasEdit = this.arrayOfCanvases[this.previousEdited]
         this.globalCanvasEdit.removeEventListener('click', this.handleEditCanvas, false)
       }
       this.previousEdited = containerIndex
-      this.globalCanvasEdit = this.arrayOfCanvases[containerIndex]
+      this.globalCanvasEdit = this.arrayOfCanvases[this.containerForEdit]
       this.globalCanvasEdit.addEventListener('click', this.handleEditCanvas, false)
     },
     drawContainers () {
