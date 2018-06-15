@@ -561,7 +561,7 @@ export default {
         this.globalCanvasEdit.removeEventListener('click', this.handleEditCanvas, false)
       }
       this.previousEdited = containerIndex
-      this.globalCanvasEdit = this.arrayOfCanvases[this.containerForEdit]
+      this.globalCanvasEdit = this.arrayOfCanvases[containerIndex]
       this.globalCanvasEdit.addEventListener('click', this.handleEditCanvas, false)
     },
     drawContainers () {
