@@ -553,6 +553,8 @@ export default {
       this.clearContainers()
     },
     displayContainer (containerIndex) {
+      console.log('prije editovan')
+      console.log(this.previousEdited)
       if (this.previousEdited !== null) {
         console.log('have canvas')
         this.globalCanvasEdit = this.arrayOfCanvases[this.previousEdited]
