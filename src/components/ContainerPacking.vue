@@ -246,7 +246,7 @@ export default {
               if (result) {
                 console.log('vec u nizu')
                 result.Deleted = el.Deleted
-                _.remove(oneContainerData.PackedBoxes, {'BoxID': result.ID})
+                //_.remove(oneContainerData.PackedBoxes, {'BoxID': result.ID})
               } else {
                 console.log('nema u nizu paleta')
                 this.containerRotatedBoxes.push({BoxID: el.ID, Deleted: el.Deleted})
@@ -335,6 +335,18 @@ export default {
             this.context.font = '15px Arial'
             this.context.fillStyle = '#40ff0c'
             this.context.fillText(el.EditQueue, el.X + el.W / 2, el.Y + el.H / 2 - 20)
+            this.context.font = '15px Arial'
+            this.context.fillStyle = 'blue'
+            this.context.fillText(el.ID, el.X + el.W / 2, el.Y + el.H / 2 + 20)
+            this.context.fillText(el.H, el.X, el.Y + el.H / 2)
+            this.context.fillText(el.W, el.X + el.W / 2 - 15, el.Y + 15)
+          } else if (el.Deleted === true) {
+            this.context.strokeStyle = '#fff503'
+            this.context.lineWidth = 1.25
+            this.context.strokeRect(el.X, el.Y, el.W, el.H)
+            this.context.font = '15px Arial'
+            this.context.fillStyle = '#fff503'
+            this.context.fillText('REMOVED', el.X + el.W / 2, el.Y + el.H / 2 + 40)
             this.context.font = '15px Arial'
             this.context.fillStyle = 'blue'
             this.context.fillText(el.ID, el.X + el.W / 2, el.Y + el.H / 2 + 20)
