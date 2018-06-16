@@ -99,6 +99,7 @@
       <el-col :xl="12" style="justify-content: flex-end; display: flex;padding-right: 2em;">
         <el-radio v-model="editType" label="Swap" border v-on:change="clearEdit">Swap</el-radio>
         <el-radio v-model="editType" label="Rotate" border v-on:change="clearEdit">Rotate</el-radio>
+        <el-radio v-model="editType" label="Remove" border v-on:change="clearEdit">Remove</el-radio>
       </el-col>
       <el-col :xl="12" style="justify-content: flex-start; display: flex;">
         <el-button type="warning" v-on:click="refillContainer(editType)">{{editType}} pallets</el-button>
@@ -154,9 +155,6 @@ export default {
     }
   },
   mounted () {
-  //    _.remove(obj.subTopics, {
-  //      subTopicId: stToDelete
-  //    });
   },
   methods: {
     clearEdit () {
@@ -239,6 +237,26 @@ export default {
             message: 'Only two pallets can be swaped.'
           })
         }
+      } else if (this.editType === 'Remove') {
+        this.containerData.forEach((oneContainerData) => {
+          oneContainerData.PackedBoxes.map(el => {
+            if ((mousePos.x > el.X && mousePos.x < (el.X + el.W)) && (mousePos.y > el.Y && mousePos.y < (el.Y + el.H))) {
+              el.Deleted = true
+              let result = this.containerRotatedBoxes.find(function (element) { return element.BoxID === el.ID })
+              if (result) {
+                console.log('vec u nizu')
+                result.Deleted = el.Deleted
+                _.remove(oneContainerData.PackedBoxes, {'BoxID': result.ID})
+              } else {
+                console.log('nema u nizu paleta')
+                this.containerRotatedBoxes.push({BoxID: el.ID, Deleted: el.Deleted})
+              }
+            } else {
+              el.Deleted = false
+            }
+            return el
+          })
+        })
       }
       this.createCustomBoxesAndContainers(this.containerData, this.$refs)
     },
@@ -584,7 +602,6 @@ export default {
             this.context.fillText('Container: ' + this.numberOfCont, this.canvas.width / 2 - 20, this.canvas.height - 20)
             this.context.fillText(this.canvas.height, 20, this.canvas.height / 2)
             this.context.fillText(this.canvas.width, this.canvas.width / 2, 20)
-            console.log(this.numberOfCont)
           }
         }
       }, 1000)
