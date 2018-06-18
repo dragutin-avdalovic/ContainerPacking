@@ -481,6 +481,12 @@ export default {
                     writable: true,
                     value: false
                   })
+                  Object.defineProperty(box, 'EditQueue', {
+                    enumerable: true,
+                    configurable: true,
+                    writable: true,
+                    value: 0
+                  })
                   box.W /= 10
                   box.H /= 10
                   box.X /= 10
@@ -520,12 +526,11 @@ export default {
                 this.containerSwapedBoxes.push({'BoxID': box.ID, 'Rotated': box.Rotated})
               })
               console.log('swapped')
-            } else if (firstIndex !== -1 || secondIndex !== -1) {
+            } else if (firstIndex === -1 || secondIndex === -1) {
               this.$notify.warning({
                 title: 'Warning',
                 message: 'Please select two boxes to swap'
               })
-              this.createCustomBoxesAndContainers(this.containerData, this.$refs)
               this.EditQueue = 0
               this.editFinished = false
             }
@@ -590,6 +595,8 @@ export default {
           console.log('prije skanjanja')
           console.log(this.containerRotatedBoxes)
           _.forEach(this.containerRotatedBoxes, (box, index) => {
+            box.Rotated = false
+            box.EditQueue = 0
             console.log(box)
             if (box.Deleted === true) {
               console.log('uklanjam')
@@ -787,7 +794,10 @@ export default {
 .el-radio {
   color: #00ff0b;
   .is-bordered {
-    border: 1px solid #00ff0b !important;
+    border: 1px solid #ff5c00 !important;
+    .is-checked {
+      border: 1px solid #ff1f00 !important;
+    }
   }
 }
 </style>
