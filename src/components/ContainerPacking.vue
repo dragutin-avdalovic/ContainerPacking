@@ -583,6 +583,8 @@ export default {
           this.notifyChooseContainer()
         }
       } else if (this.editType === 'Remove') {
+        console.log(this.value)
+        this.value = []
         this.containerAfterRemoval = []
         console.log('prije skanjanja')
         console.log(this.containerRotatedBoxes)
@@ -596,11 +598,13 @@ export default {
             console.log('ne uklanjam')
             console.log(box.BoxID)
             console.log(box.Deleted)
+            this.value.push(box.BoxID)
             this.containerAfterRemoval.push(box)
           }
         })
         console.log('posle sklanjanja')
         console.log(this.containerAfterRemoval)
+        console.log(this.value)
         if (String(this.container).valueOf() !== '') {
           this.clearContainers()
           let obj = {
