@@ -592,12 +592,11 @@ export default {
             console.log('uklanjam')
             console.log(box.BoxID)
             console.log(box.Deleted)
-            const index = this.containerRotatedBoxes.indexOf(box)
-            this.containerAfterRemoval = this.containerRotatedBoxes.splice(index, 1)
           } else {
             console.log('ne uklanjam')
             console.log(box.BoxID)
             console.log(box.Deleted)
+            this.containerAfterRemoval.push(box)
           }
         })
         console.log('posle sklanjanja')
@@ -605,7 +604,7 @@ export default {
         if (String(this.container).valueOf() !== '') {
           this.clearContainers()
           let obj = {
-            Boxes: this.containerRotatedBoxes
+            Boxes: this.containerAfterRemoval
           }
           Object.defineProperty(obj, 'ContainerID', {
             enumerable: true,
