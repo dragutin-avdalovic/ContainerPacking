@@ -588,12 +588,12 @@ export default {
         console.log(this.containerRotatedBoxes)
         _.forEach(this.containerRotatedBoxes, (box, index) => {
           console.log(box)
-          if (box.Deleted) {
+          if (box.Deleted === true) {
             console.log('uklanjam')
             console.log(box.BoxID)
             console.log(box.Deleted)
             const index = this.containerRotatedBoxes.indexOf(box)
-            this.containerRotatedBoxes.splice(index, 1)
+            this.containerAfterRemoval = this.containerRotatedBoxes.splice(index, 1)
           } else {
             console.log('ne uklanjam')
             console.log(box.BoxID)
