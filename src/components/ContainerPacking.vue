@@ -147,6 +147,7 @@ export default {
       firstForEdit: {},
       secondForEdit: {},
       containerSwapedBoxes: [],
+      containerAfterRemoval: [],
       containerForEdit: null,
       globalCanvasEdit: null,
       arrayOfCanvases: [],
@@ -179,7 +180,13 @@ export default {
       }
     },
     handleEditCanvas (evt) {
-      console.log(this.containerData)
+      console.log(this.containerRotatedBoxes)
+      _.forEach(this.containerRotatedBoxes, (box) => {
+        if (box.Deleted === undefined) {
+          box.Deleted = false
+        }
+      })
+      console.log(this.containerRotatedBoxes)
       let mousePos = this.getMousePos(evt, this.globalCanvasEdit)
       if (this.editType === 'Rotate') {
         this.containerData.forEach((oneContainerData) => {
@@ -246,7 +253,6 @@ export default {
               if (result) {
                 console.log('vec u nizu')
                 result.Deleted = el.Deleted
-                //_.remove(oneContainerData.PackedBoxes, {'BoxID': result.ID})
               } else {
                 console.log('nema u nizu paleta')
                 this.containerRotatedBoxes.push({BoxID: el.ID, Deleted: el.Deleted})
@@ -258,6 +264,8 @@ export default {
           })
         })
       }
+      console.log('container data before showing')
+      console.log(this.containerRotatedBoxes)
       this.createCustomBoxesAndContainers(this.containerData, this.$refs)
     },
     getContainers () {
@@ -317,11 +325,11 @@ export default {
         oneContainerBoxArray.PackedBoxes.forEach(el => {
           this.context.strokeStyle = '#000000'
           if (el.Rotated) {
-            this.context.strokeStyle = '#ff0000'
+            this.context.strokeStyle = '#ffc023'
             this.context.lineWidth = 1.25
             this.context.strokeRect(el.X, el.Y, el.W, el.H)
             this.context.font = '15px Arial'
-            this.context.fillStyle = '#ff0000'
+            this.context.fillStyle = '#FFC023'
             this.context.fillText('R', el.X + el.W / 2, el.Y + el.H / 2)
             this.context.font = '15px Arial'
             this.context.fillStyle = 'blue'
@@ -341,12 +349,12 @@ export default {
             this.context.fillText(el.H, el.X, el.Y + el.H / 2)
             this.context.fillText(el.W, el.X + el.W / 2 - 15, el.Y + 15)
           } else if (el.Deleted === true) {
-            this.context.strokeStyle = '#fff503'
+            this.context.strokeStyle = '#FF0000'
             this.context.lineWidth = 1.25
             this.context.strokeRect(el.X, el.Y, el.W, el.H)
             this.context.font = '15px Arial'
-            this.context.fillStyle = '#fff503'
-            this.context.fillText('REMOVED', el.X + el.W / 2, el.Y + el.H / 2 + 40)
+            this.context.fillStyle = '#FF0000'
+            this.context.fillText('D', el.X + el.W / 2, el.Y + el.H / 2 + 40)
             this.context.font = '15px Arial'
             this.context.fillStyle = 'blue'
             this.context.fillText(el.ID, el.X + el.W / 2, el.Y + el.H / 2 + 20)
@@ -566,6 +574,73 @@ export default {
               oneBox.Rotated = false
             })
             this.createCustomBoxesAndContainers(this.containerData, this.$refs)
+            this.EditQueue = 0
+            this.editFinished = false
+          }).catch(function (error) {
+            console.log(error)
+          })
+        } else {
+          this.notifyChooseContainer()
+        }
+      } else if (this.editType === 'Remove') {
+        this.containerAfterRemoval = []
+        console.log('prije skanjanja')
+        console.log(this.containerRotatedBoxes)
+        _.forEach(this.containerRotatedBoxes, (box, index) => {
+          console.log(box)
+          if (box.Deleted) {
+            console.log('uklanjam')
+            console.log(box.BoxID)
+            console.log(box.Deleted)
+            const index = this.containerRotatedBoxes.indexOf(box)
+            this.containerRotatedBoxes.splice(index, 1)
+          } else {
+            console.log('ne uklanjam')
+            console.log(box.BoxID)
+            console.log(box.Deleted)
+          }
+        })
+        console.log('posle sklanjanja')
+        console.log(this.containerAfterRemoval)
+        if (String(this.container).valueOf() !== '') {
+          this.clearContainers()
+          let obj = {
+            Boxes: this.containerRotatedBoxes
+          }
+          Object.defineProperty(obj, 'ContainerID', {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: parseInt(this.container) + 1
+          })
+          axios.post('http://52.157.147.48:80/PackingAPI/api/v1/FillContainer', obj).then((response) => {
+            this.containerData = response.data
+            Object.assign({}, this.containerData)
+            this.containerData.forEach((oneContainerData) => {
+              oneContainerData.PackedBoxes.map(box => {
+                Object.defineProperty(box, 'Rotated', {
+                  enumerable: true,
+                  configurable: true,
+                  writable: true,
+                  value: false
+                })
+                Object.defineProperty(box, 'Deleted', {
+                  enumerable: true,
+                  configurable: true,
+                  writable: true,
+                  value: false
+                })
+                box.W /= 10
+                box.H /= 10
+                box.X /= 10
+                box.Y /= 10
+                return box
+              })
+            })
+            this.createCustomBoxesAndContainers(this.containerData, this.$refs)
+            this.containerRotatedBoxes.forEach((oneBox) => {
+              oneBox.Rotated = false
+            })
             this.EditQueue = 0
             this.editFinished = false
           }).catch(function (error) {
