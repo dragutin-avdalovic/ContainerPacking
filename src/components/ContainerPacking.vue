@@ -297,6 +297,7 @@ export default {
         })
     },
     getBoxesAndContainers (type, filename) {
+      this.clearSelection()
       this.loadingGetBoxesAndCont = true
       axios.post('http://52.157.147.48:80/PackingAPI/api/v1/GetBoxesAndContainers?fileName=' + filename + '&typeofcont=' + type).then((response) => {
         this.boxes = response.data['availableBoxes']
@@ -538,7 +539,7 @@ export default {
             } else {
               this.$notify.warning({
                 title: 'Warning',
-                message: 'Please select two boxes to swap'
+                message: 'Please select at least two pallets for swapping.'
               })
               this.EditQueue = 0
               this.editFinished = false
@@ -721,7 +722,6 @@ export default {
       this.arrayOfCanvases = []
       var index = ''
       this.numberOfCont = 0
-      console.log(this.container)
       setTimeout(() => {
         for (var key in this.$refs) {
           if (this.$refs.hasOwnProperty(key)) {
