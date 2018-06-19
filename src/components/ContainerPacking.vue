@@ -222,6 +222,11 @@ export default {
                       this.firstForEdit = _.find(container.PackedBoxes, { 'EditQueue': 1 })
                     } else if (_.isEmpty(this.secondForEdit)) {
                       this.secondForEdit = _.find(container.PackedBoxes, { 'EditQueue': 2 })
+                    } else if (!_.isEmpty(this.secondForEdit) && !_.isEmpty(this.firstForEdit)) {
+                      this.$notify.warning({
+                        title: 'Warning',
+                        message: 'Two pallets for swap are selected'
+                      })
                     }
                   })
                 } else {
@@ -513,21 +518,29 @@ export default {
             let firstIndex = container.PackedBoxes.indexOf(this.firstForEdit)
             console.log(firstIndex)
             console.log('indeks drugog')
-            let secondIndex = container.PackedBoxes.indexOf(this.firstForEdit)
+            let secondIndex = container.PackedBoxes.indexOf(this.secondForEdit)
             console.log(secondIndex)
             if (firstIndex !== -1 && secondIndex !== -1) {
-              this.swap(container.PackedBoxes, container.PackedBoxes.indexOf(this.firstForEdit), container.PackedBoxes.indexOf(this.secondForEdit))
-              _.forEach(container.PackedBoxes, (box, index) => {
-                this.containerSwapedBoxes.push({'BoxID': box.ID, 'Rotated': box.Rotated})
-              })
-              console.log('swapped')
-            } else if (firstIndex === -1 || secondIndex === -1) {
+              if (firstIndex === secondIndex) {
+                console.log('usao u gresku')
+                this.EditQueue = 0
+                this.editFinished = false
+                this.containerSwapedBoxes.push(container.PackedBoxes)
+              } else if (firstIndex !== secondIndex) {
+                this.swap(container.PackedBoxes, container.PackedBoxes.indexOf(this.firstForEdit), container.PackedBoxes.indexOf(this.secondForEdit))
+                _.forEach(container.PackedBoxes, (box, index) => {
+                  this.containerSwapedBoxes.push({'BoxID': box.ID, 'Rotated': box.Rotated})
+                })
+                console.log('swapped')
+              }
+            } else {
               this.$notify.warning({
                 title: 'Warning',
                 message: 'Please select two boxes to swap'
               })
               this.EditQueue = 0
               this.editFinished = false
+              this.containerSwapedBoxes.push(container.PackedBoxes)
             }
           })
           console.log('new cont data')
