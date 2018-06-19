@@ -159,7 +159,7 @@ export default {
   },
   methods: {
     clearEdit () {
-      console.log('cistim')
+      console.log('clearing between operations')
       this.editFinished = false
       this.EditQueue = 0
       _.forEach(this.containerData, (container, index) => {
@@ -167,6 +167,7 @@ export default {
         _.forEach(container.PackedBoxes, (box, index) => {
           box.Rotated = false
           box.EditQueue = 0
+          box.Deleted = false
         })
       })
       this.clearContainers()
