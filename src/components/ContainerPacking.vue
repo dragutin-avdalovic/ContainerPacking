@@ -355,7 +355,7 @@ export default {
             this.context.strokeRect(el.X, el.Y, el.W, el.H)
             this.context.font = '15px Arial'
             this.context.fillStyle = '#FF0000'
-            this.context.fillText('D', el.X + el.W / 2, el.Y + el.H / 2 + 40)
+            this.context.fillText('D', el.X + el.W / 2 + 10, el.Y + el.H / 2)
             this.context.font = '15px Arial'
             this.context.fillStyle = 'blue'
             this.context.fillText(el.ID, el.X + el.W / 2, el.Y + el.H / 2 + 20)
