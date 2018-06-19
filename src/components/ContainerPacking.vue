@@ -181,13 +181,6 @@ export default {
       }
     },
     handleEditCanvas (evt) {
-      console.log(this.containerRotatedBoxes)
-      _.forEach(this.containerRotatedBoxes, (box) => {
-        if (box.Deleted === undefined) {
-          box.Deleted = false
-        }
-      })
-      console.log(this.containerRotatedBoxes)
       let mousePos = this.getMousePos(evt, this.globalCanvasEdit)
       if (this.editType === 'Rotate') {
         this.containerData.forEach((oneContainerData) => {
@@ -198,6 +191,7 @@ export default {
               if (result) {
                 console.log('vec u nizu')
                 result.Rotated = el.Rotated
+                console.log(result)
               } else {
                 console.log('nema u nizu paleta')
                 this.containerRotatedBoxes.push({BoxID: el.ID, Rotated: el.Rotated})
@@ -677,16 +671,34 @@ export default {
       this.clearContainers()
     },
     displayContainer (containerIndex) {
-      console.log('prije editovan')
-      console.log(this.previousEdited)
-      if (this.previousEdited !== null) {
-        console.log('have canvas')
-        this.globalCanvasEdit = this.arrayOfCanvases[this.previousEdited]
-        this.globalCanvasEdit.removeEventListener('click', this.handleEditCanvas, false)
-      }
-      this.previousEdited = containerIndex
-      this.globalCanvasEdit = this.arrayOfCanvases[containerIndex]
-      this.globalCanvasEdit.addEventListener('click', this.handleEditCanvas, false)
+      console.log(this.arrayOfCanvases)
+      //      console.log('prije editovani ->')
+      //      console.log(this.previousEdited)
+      _.forEach(this.arrayOfCanvases, (canvas, index) => {
+        if (index === containerIndex) {
+          console.log('stavio sam event')
+          this.globalCanvasEdit = this.arrayOfCanvases[containerIndex]
+          this.globalCanvasEdit.addEventListener('click', this.handleEditCanvas, false)
+        } else if (index !== containerIndex) {
+          console.log('skinuo sam event')
+          this.arrayOfCanvases[index].removeEventListener('click', this.handleEditCanvas, false)
+        }
+      })
+      //      if (this.previousEdited !== null) {
+      //        console.log('ima prije editovan')
+      //        this.globalCanvasEdit = this.arrayOfCanvases[this.previousEdited]
+      //        this.globalCanvasEdit.removeEventListener('click', this.handleEditCanvas, false)
+      //        this.arrayOfCanvases[containerIndex].addEventListener('click', this.handleEditCanvas, false)
+      //      } else {
+      //        console.log('trenutno editovani ->')
+      //        console.log(containerIndex)
+      //        this.previousEdited = containerIndex
+      //        this.globalCanvasEdit = this.arrayOfCanvases[containerIndex]
+      //        this.arrayOfCanvases[this.previousEdited].removeEventListener('click', this.handleEditCanvas, false)
+      //        this.globalCanvasEdit.addEventListener('click', this.handleEditCanvas, false)
+      //        console.log('globalni kanvas za editovanje')
+      //        console.log(this.globalCanvasEdit)
+      //      }
     },
     drawContainers () {
       this.arrayOfCanvases = []
