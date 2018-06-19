@@ -525,7 +525,9 @@ export default {
                 console.log('usao u gresku')
                 this.EditQueue = 0
                 this.editFinished = false
-                this.containerSwapedBoxes.push(container.PackedBoxes)
+                _.forEach(container.PackedBoxes, (box, index) => {
+                  this.containerSwapedBoxes.push({'BoxID': box.ID, 'Rotated': false})
+                })
               } else if (firstIndex !== secondIndex) {
                 this.swap(container.PackedBoxes, container.PackedBoxes.indexOf(this.firstForEdit), container.PackedBoxes.indexOf(this.secondForEdit))
                 _.forEach(container.PackedBoxes, (box, index) => {
@@ -540,7 +542,9 @@ export default {
               })
               this.EditQueue = 0
               this.editFinished = false
-              this.containerSwapedBoxes.push(container.PackedBoxes)
+              _.forEach(container.PackedBoxes, (box, index) => {
+                this.containerSwapedBoxes.push({'BoxID': box.ID, 'Rotated': false})
+              })
             }
           })
           console.log('new cont data')
