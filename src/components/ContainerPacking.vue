@@ -102,7 +102,7 @@
         <el-radio v-model="editType" label="Remove" border v-on:change="clearEdit">Remove</el-radio>
       </el-col>
       <el-col :xl="12" style="justify-content: flex-start; display: flex;">
-        <el-button type="warning" v-on:click="refillContainer(editType)">{{editType}} pallets</el-button>
+        <el-button :loading="loadingEdit" type="warning" v-on:click="refillContainer(editType)">{{editType}} pallets</el-button>
       </el-col>
     </el-row>
   </div>
@@ -322,7 +322,7 @@ export default {
       } else {
         this.$notify.error({
           title: 'Error',
-          message: 'Please select shipping type and file name'
+          message: 'Please select both shipping type and file name'
         })
         this.loadingGetBoxesAndCont = false
       }
@@ -482,6 +482,7 @@ export default {
       }
     },
     refillContainer (type) {
+      this.loadingEdit = true
       if (this.containerForEdit !== null) {
         if (type === 'Rotate') {
           if (String(this.container).valueOf() !== '') {
@@ -525,11 +526,14 @@ export default {
               })
               this.EditQueue = 0
               this.editFinished = false
+              this.loadingEdit = false
             }).catch(function (error) {
               console.log(error)
+              this.loadingEdit = false
             })
           } else {
             this.notifyChooseContainer()
+            this.loadingEdit = false
           }
         } else if (type === 'Swap') {
           this.containerSwapedBoxes = []
@@ -570,6 +574,7 @@ export default {
               _.forEach(container.PackedBoxes, (box, index) => {
                 this.containerSwapedBoxes.push({'BoxID': box.ID, 'Rotated': false})
               })
+              this.loadingEdit = false
             }
           })
           console.log('new cont data')
@@ -619,11 +624,14 @@ export default {
               this.createCustomBoxesAndContainers(this.containerData, this.$refs)
               this.EditQueue = 0
               this.editFinished = false
+              this.loadingEdit = false
             }).catch(function (error) {
               console.log(error)
+              this.loadingEdit = false
             })
           } else {
             this.notifyChooseContainer()
+            this.loadingEdit = false
           }
         } else if (this.editType === 'Remove') {
           console.log(this.value)
@@ -692,11 +700,14 @@ export default {
               })
               this.EditQueue = 0
               this.editFinished = false
+              this.loadingEdit = false
             }).catch(function (error) {
               console.log(error)
+              this.loadingEdit = false
             })
           } else {
             this.notifyChooseContainer()
+            this.loadingEdit = false
           }
         }
       } else {
@@ -704,6 +715,7 @@ export default {
           title: 'Error',
           message: 'Please choose a container to edit'
         })
+        this.loadingEdit = false
       }
     },
     clearSelection () {
