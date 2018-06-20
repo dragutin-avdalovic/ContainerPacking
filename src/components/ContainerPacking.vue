@@ -96,13 +96,11 @@
       </el-select>
     </el-row>
     <el-row class="row-bg-center">
-      <el-col :xl="12" style="justify-content: flex-end; display: flex;padding-right: 2em;">
+      <el-col :xl="24" class="row-bg-center">
         <el-radio v-model="editType" label="Swap" border v-on:change="clearEdit">Swap</el-radio>
         <el-radio v-model="editType" label="Rotate" border v-on:change="clearEdit">Rotate</el-radio>
         <el-radio v-model="editType" label="Remove" border v-on:change="clearEdit">Remove</el-radio>
-      </el-col>
-      <el-col :xl="12" style="justify-content: flex-start; display: flex;">
-        <el-button :loading="loadingEdit" type="warning" v-on:click="refillContainer(editType)">{{editType}} pallets</el-button>
+        <el-button style="margin-left: 2em;" :loading="loadingEdit" type="success" v-on:click="refillContainer(editType)">{{editType}} pallets</el-button>
       </el-col>
     </el-row>
   </div>
