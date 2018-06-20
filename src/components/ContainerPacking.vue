@@ -304,6 +304,8 @@ export default {
       this.clearSelection()
       this.containers = []
       this.containerForEdit = ''
+      this.container = ''
+      this.value = []
       this.loadingGetBoxesAndCont = true
       if (filename !== '' && type !== null) {
         axios.post('http://52.157.147.48:80/PackingAPI/api/v1/GetBoxesAndContainers?fileName=' + filename + '&typeofcont=' + type).then((response) => {
@@ -569,7 +571,7 @@ export default {
             } else {
               this.$notify.warning({
                 title: 'Warning',
-                message: 'Please select at least two pallets for swapping.'
+                message: 'Please select two pallets for swapping.'
               })
               this.EditQueue = 0
               this.editFinished = false
