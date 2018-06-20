@@ -69,7 +69,7 @@
           </el-select>
         </el-col>
         <el-col class="row-bg-center">
-          <el-button type="danger" v-on:click="clearSelection()">Clear selection</el-button>
+          <el-button type="danger" :loading="loadingClearSolution" v-on:click="clearSelection">Clear selection</el-button>
           <el-button type="primary" :loading="loadingFillContainer" v-on:click="fillContainer('FillContainer')">Fill the container</el-button>
           <el-button type="success" :loading="loadingGetSolution" v-on:click="fillContainer('GetSolution')">Get solution</el-button>
         </el-col>
@@ -143,6 +143,8 @@ export default {
       loadingGetBoxesAndCont: false,
       loadingFillContainer: false,
       loadingGetSolution: false,
+      loadingClearSolution: false,
+      loadingEdit: false,
       EditQueue: 0,
       editFinished: false,
       filteredObject: {},
@@ -300,23 +302,30 @@ export default {
     },
     getBoxesAndContainers (type, filename) {
       this.clearSelection()
-      //      console.log(document.getElementById('choose-select'))
-      //      console.log(this.$refs)
       this.loadingGetBoxesAndCont = true
-      axios.post('http://52.157.147.48:80/PackingAPI/api/v1/GetBoxesAndContainers?fileName=' + filename + '&typeofcont=' + type).then((response) => {
-        this.boxes = response.data['availableBoxes']
-        this.generateData()
-        this.containers = response.data['availableContainers']
-        this.containers = this.containers.map(container => {
-          container.Width /= 10
-          container.Height /= 10
-          return container
+      if (filename !== '' && type !== null) {
+        axios.post('http://52.157.147.48:80/PackingAPI/api/v1/GetBoxesAndContainers?fileName=' + filename + '&typeofcont=' + type).then((response) => {
+          this.boxes = response.data['availableBoxes']
+          this.generateData()
+          this.containers = response.data['availableContainers']
+          this.containers = this.containers.map(container => {
+            container.Width /= 10
+            container.Height /= 10
+            return container
+          })
+          this.loadingGetBoxesAndCont = false
+          this.drawContainers()
+        }).catch(function (error) {
+          this.loadingGetBoxesAndCont = false
+          console.log(error)
+        })
+      } else {
+        this.$notify.error({
+          title: 'Error',
+          message: 'Please select shipping type and file name'
         })
         this.loadingGetBoxesAndCont = false
-        this.drawContainers()
-      }).catch(function (error) {
-        console.log(error)
-      })
+      }
     },
     createCustomBoxesAndContainers (containersAndBoxesArray, refs) {
       var indexOfCanvas = ''
@@ -463,9 +472,13 @@ export default {
           this.loadingGetSolution = false
         }).catch(function (error) {
           console.log(error)
+          this.loadingFillContainer = false
+          this.loadingGetSolution = false
         })
       } else {
         this.notifyChooseContainer()
+        this.loadingFillContainer = false
+        this.loadingGetSolution = false
       }
     },
     refillContainer (type) {
@@ -694,10 +707,14 @@ export default {
       }
     },
     clearSelection () {
+      this.loadingClearSolution = true
+      console.log(this.loadingClearSolution)
       this.value = []
       this.editFinished = false
       this.EditQueue = 0
       this.clearContainers()
+      this.loadingClearSolution = false
+      console.log(this.loadingClearSolution)
     },
     displayContainer (containerIndex) {
       console.log(this.arrayOfCanvases)
