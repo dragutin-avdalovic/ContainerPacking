@@ -306,6 +306,7 @@ export default {
       this.containerForEdit = ''
       this.container = []
       this.value = []
+      this.containerData = []
       this.loadingGetBoxesAndCont = true
       if (filename !== '' && type !== null) {
         axios.post('http://52.157.147.48:80/PackingAPI/api/v1/GetBoxesAndContainers?fileName=' + filename + '&typeofcont=' + type).then((response) => {
@@ -866,12 +867,12 @@ export default {
     padding-bottom: 2em;
 }
 .el-radio {
-  color: #00ff0b;
-  .is-bordered {
-    border: 1px solid #ff5c00 !important;
-    .is-checked {
-      border: 1px solid #ff1f00 !important;
-    }
-  }
+  color: #4c6013;
+}
+.el-radio.is-bordered {
+  border: 1px solid #ff5c00;
+}
+.el-radio.is-bordered.is-checked {
+  border: 1px solid #00ff0b;
 }
 </style>
