@@ -304,7 +304,7 @@ export default {
       this.clearSelection()
       this.containers = []
       this.containerForEdit = ''
-      this.container = ''
+      this.container = []
       this.value = []
       this.loadingGetBoxesAndCont = true
       if (filename !== '' && type !== null) {
