@@ -723,18 +723,14 @@ export default {
     },
     clearSelection () {
       this.loadingClearSolution = true
-      console.log(this.loadingClearSolution)
       this.value = []
       this.editFinished = false
       this.EditQueue = 0
       this.clearContainers()
       this.loadingClearSolution = false
-      console.log(this.loadingClearSolution)
     },
     displayContainer (containerIndex) {
       console.log(this.arrayOfCanvases)
-      //      console.log('prije editovani ->')
-      //      console.log(this.previousEdited)
       _.forEach(this.arrayOfCanvases, (canvas, index) => {
         if (index === containerIndex) {
           console.log('stavio sam event')
