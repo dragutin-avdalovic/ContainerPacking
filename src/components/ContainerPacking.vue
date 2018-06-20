@@ -57,7 +57,7 @@
         </el-col>
         <el-col class="row-bg-center">
           <span class="chooseContainer">Choose container to fill:</span>
-          <el-select style="float: right;" v-model="container" multiple placeholder="Select container">
+          <el-select id="choose-select" style="float: right;" v-model="container" multiple placeholder="Select container">
             <el-option
               v-for="(item, index) in containers"
               :key="item.ID"
@@ -70,8 +70,8 @@
         </el-col>
         <el-col class="row-bg-center">
           <el-button type="danger" v-on:click="clearSelection()">Clear selection</el-button>
-          <el-button type="primary" v-on:click="fillContainer('FillContainer')">Fill the container</el-button>
-          <el-button type="success" v-on:click="fillContainer('GetSolution')">Get solution</el-button>
+          <el-button type="primary" :loading="loadingFillContainer" v-on:click="fillContainer('FillContainer')">Fill the container</el-button>
+          <el-button type="success" :loading="loadingGetSolution" v-on:click="fillContainer('GetSolution')">Get solution</el-button>
         </el-col>
       </el-col>
     </el-row>
@@ -84,7 +84,7 @@
     </el-row>
     <el-row  class="row-bg-center">
       <span class="chooseContainer">Choose container to edit:</span>
-      <el-select v-on:change="displayContainer(containerForEdit)" style="float: right;" v-model="containerForEdit" placeholder="Select container">
+      <el-select id ="edit-select" v-on:change="displayContainer(containerForEdit)" style="float: right;" v-model="containerForEdit" placeholder="Select container">
         <el-option
           v-for="(item, index) in containers"
           :key="item.ID"
@@ -141,6 +141,8 @@ export default {
       editingScale: 'FillContainer',
       numberOfCont: 0,
       loadingGetBoxesAndCont: false,
+      loadingFillContainer: false,
+      loadingGetSolution: false,
       EditQueue: 0,
       editFinished: false,
       filteredObject: {},
@@ -298,6 +300,8 @@ export default {
     },
     getBoxesAndContainers (type, filename) {
       this.clearSelection()
+      //      console.log(document.getElementById('choose-select'))
+      //      console.log(this.$refs)
       this.loadingGetBoxesAndCont = true
       axios.post('http://52.157.147.48:80/PackingAPI/api/v1/GetBoxesAndContainers?fileName=' + filename + '&typeofcont=' + type).then((response) => {
         this.boxes = response.data['availableBoxes']
@@ -385,6 +389,11 @@ export default {
       })
     },
     fillContainer (type) {
+      if (type === 'FillContainer') {
+        this.loadingFillContainer = true
+      } else {
+        this.loadingGetSolution = true
+      }
       if (String(this.container).valueOf() !== '') {
         this.clearContainers()
         this.containerBoxes = []
@@ -450,6 +459,8 @@ export default {
               this.containerRotatedBoxes.push({BoxID: el.ID, Rotated: false})
             })
           })
+          this.loadingFillContainer = false
+          this.loadingGetSolution = false
         }).catch(function (error) {
           console.log(error)
         })
