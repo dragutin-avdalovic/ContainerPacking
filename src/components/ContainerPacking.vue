@@ -302,6 +302,8 @@ export default {
     },
     getBoxesAndContainers (type, filename) {
       this.clearSelection()
+      this.containers = []
+      this.containerForEdit = ''
       this.loadingGetBoxesAndCont = true
       if (filename !== '' && type !== null) {
         axios.post('http://52.157.147.48:80/PackingAPI/api/v1/GetBoxesAndContainers?fileName=' + filename + '&typeofcont=' + type).then((response) => {
@@ -339,11 +341,11 @@ export default {
         oneContainerBoxArray.PackedBoxes.forEach(el => {
           this.context.strokeStyle = '#000000'
           if (el.Rotated) {
-            this.context.strokeStyle = '#ffc023'
+            this.context.strokeStyle = '#ff6f09'
             this.context.lineWidth = 1.25
             this.context.strokeRect(el.X, el.Y, el.W, el.H)
             this.context.font = '15px Arial'
-            this.context.fillStyle = '#FFC023'
+            this.context.fillStyle = '#ff6f09'
             this.context.fillText('R', el.X + el.W / 2, el.Y + el.H / 2)
             this.context.font = '15px Arial'
             this.context.fillStyle = 'blue'
@@ -356,7 +358,7 @@ export default {
             this.context.strokeRect(el.X, el.Y, el.W, el.H)
             this.context.font = '15px Arial'
             this.context.fillStyle = '#40ff0c'
-            this.context.fillText(el.EditQueue, el.X + el.W / 2, el.Y + el.H / 2 - 20)
+            this.context.fillText(el.EditQueue, el.X + el.W / 2, el.Y + el.H / 2)
             this.context.font = '15px Arial'
             this.context.fillStyle = 'blue'
             this.context.fillText(el.ID, el.X + el.W / 2, el.Y + el.H / 2 + 20)
@@ -368,7 +370,7 @@ export default {
             this.context.strokeRect(el.X, el.Y, el.W, el.H)
             this.context.font = '15px Arial'
             this.context.fillStyle = '#FF0000'
-            this.context.fillText('D', el.X + el.W / 2 + 10, el.Y + el.H / 2)
+            this.context.fillText('D', el.X + el.W / 2, el.Y + el.H / 2)
             this.context.font = '15px Arial'
             this.context.fillStyle = 'blue'
             this.context.fillText(el.ID, el.X + el.W / 2, el.Y + el.H / 2 + 20)
@@ -736,10 +738,10 @@ export default {
         if (index === containerIndex) {
           console.log('stavio sam event')
           this.globalCanvasEdit = this.arrayOfCanvases[containerIndex]
-          this.globalCanvasEdit.addEventListener('click', this.handleEditCanvas, false)
+          this.globalCanvasEdit.addEventListener('click', this.handleEditCanvas, true)
         } else if (index !== containerIndex) {
           console.log('skinuo sam event')
-          this.arrayOfCanvases[index].removeEventListener('click', this.handleEditCanvas, false)
+          this.arrayOfCanvases[index].removeEventListener('click', this.handleEditCanvas, true)
         }
       })
       //      if (this.previousEdited !== null) {
