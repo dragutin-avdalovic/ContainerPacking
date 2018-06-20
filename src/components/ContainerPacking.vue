@@ -869,4 +869,11 @@ export default {
 .el-radio.is-bordered.is-checked {
   border: 1px solid #00ff0b;
 }
+.el-radio__input.is-checked .el-radio__inner {
+  border-color: #00ff0b;
+  background: #00ff0b;
+}
+.el-radio__input.is-checked+.el-radio__label {
+  color: #00ff0b;
+}
 </style>
