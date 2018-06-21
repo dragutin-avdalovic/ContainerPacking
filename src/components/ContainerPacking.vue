@@ -334,6 +334,7 @@ export default {
     createCustomBoxesAndContainers (containersAndBoxesArray, refs, containerForEdit) {
       console.log('kontejneri i boxovi erej')
       console.log(containersAndBoxesArray)
+      this.oneContainerAndBoxesArray = []
       if (containerForEdit === null) {
         var indexOfCanvas = ''
         containersAndBoxesArray.forEach((oneContainerBoxArray) => {
