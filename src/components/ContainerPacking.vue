@@ -174,7 +174,7 @@ export default {
         })
       })
       this.clearContainers()
-      this.createCustomBoxesAndContainers(this.containerData, this.$refs, null)
+      this.createCustomBoxesAndContainers(this.containerData, this.$refs, this.containerForEdit)
     },
     getMousePos (evt, canvas) {
       var rect = canvas.getBoundingClientRect()
@@ -332,10 +332,8 @@ export default {
       }
     },
     createCustomBoxesAndContainers (containersAndBoxesArray, refs, containerForEdit) {
-      console.log('kontejneri i boxovi erej')
-      console.log(containersAndBoxesArray)
       this.oneContainerAndBoxesArray = []
-      if (containerForEdit === null) {
+      if (containerForEdit === null || containerForEdit === '') {
         var indexOfCanvas = ''
         containersAndBoxesArray.forEach((oneContainerBoxArray) => {
           for (var key in refs) {
@@ -515,6 +513,12 @@ export default {
         }
         axios.post('http://52.157.147.48:80/PackingAPI/api/v1/' + type, obj).then((response) => {
           this.containerData = response.data
+          console.log('after fill data')
+          console.log(this.containerData)
+          this.value = []
+          _.forEach(this.containerData[0].PackedBoxes, (boxes) => {
+            this.value.push(boxes.ID)
+          })
           Object.assign({}, this.containerData)
           this.containerData.forEach((oneContainerData) => {
             oneContainerData.PackedBoxes.map(box => {
@@ -537,7 +541,7 @@ export default {
               return box
             })
           })
-          this.createCustomBoxesAndContainers(this.containerData, this.$refs, null)
+          this.createCustomBoxesAndContainers(this.containerData, this.$refs, this.containerForEdit)
           this.containerData.forEach((oneContainerData) => {
             oneContainerData.PackedBoxes.map(el => {
               this.containerRotatedBoxes.push({BoxID: el.ID, Rotated: false})
@@ -595,7 +599,7 @@ export default {
                   return box
                 })
               })
-              this.createCustomBoxesAndContainers(this.containerData, this.$refs, null)
+              this.createCustomBoxesAndContainers(this.containerData, this.$refs, this.containerForEdit)
               this.containerRotatedBoxes.forEach((oneBox) => {
                 oneBox.Rotated = false
               })
@@ -696,7 +700,7 @@ export default {
               this.containerRotatedBoxes.forEach((oneBox) => {
                 oneBox.Rotated = false
               })
-              this.createCustomBoxesAndContainers(this.containerData, this.$refs, null)
+              this.createCustomBoxesAndContainers(this.containerData, this.$refs, this.containerForEdit)
               this.EditQueue = 0
               this.editFinished = false
               this.loadingEdit = false
@@ -769,7 +773,7 @@ export default {
                   return box
                 })
               })
-              this.createCustomBoxesAndContainers(this.containerData, this.$refs, null)
+              this.createCustomBoxesAndContainers(this.containerData, this.$refs, this.containerForEdit)
               this.containerRotatedBoxes.forEach((oneBox) => {
                 oneBox.Rotated = false
               })
@@ -806,9 +810,9 @@ export default {
       _.forEach(this.arrayOfCanvases, (canvas, index) => {
         if (index === containerIndex) {
           console.log('stavio sam event')
-          this.arrayOfCanvases[index].style.display = 'block'
           this.globalCanvasEdit = this.arrayOfCanvases[index]
           this.globalCanvasEdit.addEventListener('click', this.handleEditCanvas, false)
+          this.arrayOfCanvases[index].style.display = 'block'
         } else {
           console.log('skinuo sam event')
           this.arrayOfCanvases[index].removeEventListener('click', this.handleEditCanvas, false)
