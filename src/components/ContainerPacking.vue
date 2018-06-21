@@ -866,7 +866,7 @@ export default {
     notifyChooseContainer () {
       this.$notify.error({
         title: 'Error',
-        message: 'Please choose a container to fill'
+        message: 'Please select a container/containers to fill'
       })
     },
     swap (arr, index1, index2) {
