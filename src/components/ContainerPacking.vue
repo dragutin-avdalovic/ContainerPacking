@@ -806,28 +806,15 @@ export default {
       _.forEach(this.arrayOfCanvases, (canvas, index) => {
         if (index === containerIndex) {
           console.log('stavio sam event')
+          this.arrayOfCanvases[index].style.display = 'block'
           this.globalCanvasEdit = this.arrayOfCanvases[index]
           this.globalCanvasEdit.addEventListener('click', this.handleEditCanvas, false)
         } else {
           console.log('skinuo sam event')
           this.arrayOfCanvases[index].removeEventListener('click', this.handleEditCanvas, false)
+          this.arrayOfCanvases[index].style.display = 'none'
         }
       })
-      //      if (this.previousEdited !== null) {
-      //        console.log('ima prije editovan')
-      //        this.globalCanvasEdit = this.arrayOfCanvases[this.previousEdited]
-      //        this.globalCanvasEdit.removeEventListener('click', this.handleEditCanvas, false)
-      //        this.arrayOfCanvases[containerIndex].addEventListener('click', this.handleEditCanvas, false)
-      //      } else {
-      //        console.log('trenutno editovani ->')
-      //        console.log(containerIndex)
-      //        this.previousEdited = containerIndex
-      //        this.globalCanvasEdit = this.arrayOfCanvases[containerIndex]
-      //        this.arrayOfCanvases[this.previousEdited].removeEventListener('click', this.handleEditCanvas, false)
-      //        this.globalCanvasEdit.addEventListener('click', this.handleEditCanvas, false)
-      //        console.log('globalni kanvas za editovanje')
-      //        console.log(this.globalCanvasEdit)
-      //      }
     },
     drawContainers () {
       this.arrayOfCanvases = []
