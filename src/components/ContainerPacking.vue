@@ -154,7 +154,8 @@ export default {
       globalCanvasEdit: null,
       arrayOfCanvases: [],
       currentEdit: null,
-      previousEdited: null
+      previousEdited: null,
+      oneContainerAndBoxesArray: []
     }
   },
   mounted () {
@@ -173,7 +174,7 @@ export default {
         })
       })
       this.clearContainers()
-      this.createCustomBoxesAndContainers(this.containerData, this.$refs)
+      this.createCustomBoxesAndContainers(this.containerData, this.$refs, null)
     },
     getMousePos (evt, canvas) {
       var rect = canvas.getBoundingClientRect()
@@ -268,7 +269,7 @@ export default {
       }
       console.log('container data before showing')
       console.log(this.containerRotatedBoxes)
-      this.createCustomBoxesAndContainers(this.containerData, this.$refs)
+      this.createCustomBoxesAndContainers(this.containerData, this.$refs, this.containerForEdit)
     },
     getContainers () {
       axios.get('http://52.157.147.48:80/PackingAPI/api/v1/GetContainers').then((response) => {
@@ -330,16 +331,83 @@ export default {
         this.loadingGetBoxesAndCont = false
       }
     },
-    createCustomBoxesAndContainers (containersAndBoxesArray, refs) {
-      var indexOfCanvas = ''
-      containersAndBoxesArray.forEach((oneContainerBoxArray) => {
-        for (var key in refs) {
-          indexOfCanvas = parseInt(key.split('s')[1]) + 1
-          if (String(indexOfCanvas) === oneContainerBoxArray.ContainerID) {
-            this.context = document.getElementById(key).getContext('2d')
+    createCustomBoxesAndContainers (containersAndBoxesArray, refs, containerForEdit) {
+      if (containerForEdit === null) {
+        var indexOfCanvas = ''
+        containersAndBoxesArray.forEach((oneContainerBoxArray) => {
+          for (var key in refs) {
+            indexOfCanvas = parseInt(key.split('s')[1]) + 1
+            if (String(indexOfCanvas) === oneContainerBoxArray.ContainerID) {
+              this.context = document.getElementById(key).getContext('2d')
+            }
           }
-        }
-        oneContainerBoxArray.PackedBoxes.forEach(el => {
+          oneContainerBoxArray.PackedBoxes.forEach(el => {
+            this.context.strokeStyle = '#000000'
+            if (el.Rotated) {
+              this.context.strokeStyle = '#ff6f09'
+              this.context.lineWidth = 1.25
+              this.context.strokeRect(el.X, el.Y, el.W, el.H)
+              this.context.font = '15px Arial'
+              this.context.fillStyle = '#ff6f09'
+              this.context.fillText('R', el.X + el.W / 2, el.Y + el.H / 2)
+              this.context.font = '15px Arial'
+              this.context.fillStyle = 'blue'
+              this.context.fillText(el.ID, el.X + el.W / 2, el.Y + el.H / 2 + 20)
+              this.context.fillText(el.H, el.X, el.Y + el.H / 2)
+              this.context.fillText(el.W, el.X + el.W / 2 - 15, el.Y + 15)
+            } else if (el.EditQueue > 0) {
+              this.context.strokeStyle = '#40ff0c'
+              this.context.lineWidth = 1.25
+              this.context.strokeRect(el.X, el.Y, el.W, el.H)
+              this.context.font = '15px Arial'
+              this.context.fillStyle = '#40ff0c'
+              this.context.fillText(el.EditQueue, el.X + el.W / 2, el.Y + el.H / 2)
+              this.context.font = '15px Arial'
+              this.context.fillStyle = 'blue'
+              this.context.fillText(el.ID, el.X + el.W / 2, el.Y + el.H / 2 + 20)
+              this.context.fillText(el.H, el.X, el.Y + el.H / 2)
+              this.context.fillText(el.W, el.X + el.W / 2 - 15, el.Y + 15)
+            } else if (el.Deleted === true) {
+              this.context.strokeStyle = '#FF0000'
+              this.context.lineWidth = 1.25
+              this.context.strokeRect(el.X, el.Y, el.W, el.H)
+              this.context.font = '15px Arial'
+              this.context.fillStyle = '#FF0000'
+              this.context.fillText('D', el.X + el.W / 2, el.Y + el.H / 2)
+              this.context.font = '15px Arial'
+              this.context.fillStyle = 'blue'
+              this.context.fillText(el.ID, el.X + el.W / 2, el.Y + el.H / 2 + 20)
+              this.context.fillText(el.H, el.X, el.Y + el.H / 2)
+              this.context.fillText(el.W, el.X + el.W / 2 - 15, el.Y + 15)
+            } else {
+              this.context.strokeStyle = '#272041'
+              this.context.lineWidth = 1
+              this.context.strokeRect(el.X, el.Y, el.W, el.H)
+              this.context.font = '15px Arial'
+              this.context.fillStyle = '#001cff'
+              this.context.fillText(el.ID, el.X + el.W / 2, el.Y + el.H / 2 + 20)
+              this.context.fillText(el.H, el.X, el.Y + el.H / 2)
+              this.context.fillText(el.W, el.X + el.W / 2 - 15, el.Y + 15)
+            }
+          })
+          this.context.stroke()
+        })
+      } else {
+        var keyOfCanvas = ''
+        containersAndBoxesArray.forEach((oneContainerBoxArray) => {
+          console.log('selected kont')
+          console.log(String(containerForEdit))
+          console.log('kont')
+          console.log(oneContainerBoxArray.ContainerID)
+          if (String(containerForEdit + 1) === oneContainerBoxArray.ContainerID) {
+            console.log('nasao sam kont')
+            keyOfCanvas = 'canvas' + containerForEdit
+            console.log(keyOfCanvas)
+            this.context = document.getElementById(keyOfCanvas).getContext('2d')
+            this.oneContainerAndBoxesArray = oneContainerBoxArray.PackedBoxes
+          }
+        })
+        this.oneContainerAndBoxesArray.forEach(el => {
           this.context.strokeStyle = '#000000'
           if (el.Rotated) {
             this.context.strokeStyle = '#ff6f09'
@@ -389,7 +457,7 @@ export default {
           }
         })
         this.context.stroke()
-      })
+      }
     },
     generateData () {
       this.data = []
@@ -465,7 +533,7 @@ export default {
               return box
             })
           })
-          this.createCustomBoxesAndContainers(this.containerData, this.$refs)
+          this.createCustomBoxesAndContainers(this.containerData, this.$refs, null)
           this.containerData.forEach((oneContainerData) => {
             oneContainerData.PackedBoxes.map(el => {
               this.containerRotatedBoxes.push({BoxID: el.ID, Rotated: false})
@@ -523,7 +591,7 @@ export default {
                   return box
                 })
               })
-              this.createCustomBoxesAndContainers(this.containerData, this.$refs)
+              this.createCustomBoxesAndContainers(this.containerData, this.$refs, null)
               this.containerRotatedBoxes.forEach((oneBox) => {
                 oneBox.Rotated = false
               })
@@ -624,7 +692,7 @@ export default {
               this.containerRotatedBoxes.forEach((oneBox) => {
                 oneBox.Rotated = false
               })
-              this.createCustomBoxesAndContainers(this.containerData, this.$refs)
+              this.createCustomBoxesAndContainers(this.containerData, this.$refs, null)
               this.EditQueue = 0
               this.editFinished = false
               this.loadingEdit = false
@@ -697,7 +765,7 @@ export default {
                   return box
                 })
               })
-              this.createCustomBoxesAndContainers(this.containerData, this.$refs)
+              this.createCustomBoxesAndContainers(this.containerData, this.$refs, null)
               this.containerRotatedBoxes.forEach((oneBox) => {
                 oneBox.Rotated = false
               })
@@ -734,11 +802,11 @@ export default {
       _.forEach(this.arrayOfCanvases, (canvas, index) => {
         if (index === containerIndex) {
           console.log('stavio sam event')
-          this.globalCanvasEdit = this.arrayOfCanvases[containerIndex]
-          this.globalCanvasEdit.addEventListener('click', this.handleEditCanvas, true)
-        } else if (index !== containerIndex) {
+          this.globalCanvasEdit = this.arrayOfCanvases[index]
+          this.globalCanvasEdit.addEventListener('click', this.handleEditCanvas, false)
+        } else {
           console.log('skinuo sam event')
-          this.arrayOfCanvases[index].removeEventListener('click', this.handleEditCanvas, true)
+          this.arrayOfCanvases[index].removeEventListener('click', this.handleEditCanvas, false)
         }
       })
       //      if (this.previousEdited !== null) {
@@ -875,5 +943,8 @@ export default {
 }
 .el-radio__input.is-checked+.el-radio__label {
   color: #00ff0b;
+}
+.el-radio__inner {
+  border: 1px solid #ff5c00;
 }
 </style>
