@@ -840,9 +840,6 @@ export default {
       }, 1000)
       console.log(this.numberOfCont)
     },
-    drawSelectedContainers () {
-      this.displayContainer(this.container)
-    },
     clearContainers () {
       var index = ''
       for (var key in this.$refs) {
