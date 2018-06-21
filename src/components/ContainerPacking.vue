@@ -332,6 +332,8 @@ export default {
       }
     },
     createCustomBoxesAndContainers (containersAndBoxesArray, refs, containerForEdit) {
+      console.log('kontejneri i boxovi erej')
+      console.log(containersAndBoxesArray)
       if (containerForEdit === null) {
         var indexOfCanvas = ''
         containersAndBoxesArray.forEach((oneContainerBoxArray) => {
@@ -394,12 +396,13 @@ export default {
         })
       } else {
         var keyOfCanvas = ''
+        var realContainerId = containerForEdit + 1
         containersAndBoxesArray.forEach((oneContainerBoxArray) => {
           console.log('selected kont')
-          console.log(String(containerForEdit))
+          console.log(realContainerId)
           console.log('kont')
           console.log(oneContainerBoxArray.ContainerID)
-          if (String(containerForEdit + 1) === oneContainerBoxArray.ContainerID) {
+          if (String(realContainerId) === oneContainerBoxArray.ContainerID) {
             console.log('nasao sam kont')
             keyOfCanvas = 'canvas' + containerForEdit
             console.log(keyOfCanvas)
