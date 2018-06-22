@@ -173,6 +173,28 @@ export default {
           box.Deleted = false
         })
       })
+      if (this.editType === 'Swap') {
+        this.$notify.success({
+          title: 'Swap',
+          message: 'Swap activated, please select two pallets to swap then click on Swap pallets button',
+          position: 'bottom-right',
+          duration: 6000
+        })
+      } else if (this.editType === 'Rotate') {
+        this.$notify.success({
+          title: 'Rotate',
+          message: 'Rotate activated, please select a pallets to rotate then click on Rotate pallets button',
+          position: 'bottom-right',
+          duration: 6000
+        })
+      } else if (this.editType === 'Remove') {
+        this.$notify.success({
+          title: 'Remove',
+          message: 'Remove activated, please select a pallets to remove then click on Remove pallets button',
+          position: 'bottom-right',
+          duration: 6000
+        })
+      }
       this.clearContainers()
       this.createCustomBoxesAndContainers(this.containerData, this.$refs, this.containerForEdit)
     },
@@ -811,13 +833,13 @@ export default {
       _.forEach(this.arrayOfCanvases, (canvas, index) => {
         if (index === containerIndex) {
           console.log('stavio sam event')
-          this.globalCanvasEdit = this.arrayOfCanvases[index]
-          this.globalCanvasEdit.addEventListener('click', this.handleEditCanvas, false)
-          this.arrayOfCanvases[index].style.display = 'block'
+          this.globalCanvasEdit = canvas
+          canvas.addEventListener('click', this.handleEditCanvas, false)
+          canvas.style.display = 'block'
         } else {
           console.log('skinuo sam event')
-          this.arrayOfCanvases[index].removeEventListener('click', this.handleEditCanvas, false)
-          this.arrayOfCanvases[index].style.display = 'none'
+          canvas.removeEventListener('click', this.handleEditCanvas, false)
+          canvas.style.display = 'none'
         }
       })
     },
