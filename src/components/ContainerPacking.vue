@@ -833,11 +833,15 @@ export default {
       _.forEach(this.arrayOfCanvases, (canvas, index) => {
         if (index === containerIndex) {
           console.log('stavio sam event')
-          this.globalCanvasEdit = canvas
+          console.log('canvas sa upaljenim eventom')
+          console.log(canvas)
           canvas.addEventListener('click', this.handleEditCanvas, false)
           canvas.style.display = 'block'
+          this.globalCanvasEdit = canvas
         } else {
           console.log('skinuo sam event')
+          console.log('canvas sa skinutim eventom')
+          console.log(canvas)
           canvas.removeEventListener('click', this.handleEditCanvas, false)
           canvas.style.display = 'none'
         }
