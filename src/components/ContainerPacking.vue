@@ -907,25 +907,21 @@ export default {
   overflow-x: auto;
   margin: 2% 2%;
 }
-.canvas-div
-{
+.canvas-div {
   margin: 1em;
   width: 100%;
 }
-.chooseContainer
-{
+.chooseContainer {
   font-size: 1em;
   color: dodgerblue;
   padding-right: 1em;
 }
-.chooseType
-{
+.chooseType {
   font-size: 1em;
   color: green;
   padding-right: 0.5em;
 }
-.main
-{
+.main {
     padding-top: 2em;
     padding-bottom: 2em;
 }
