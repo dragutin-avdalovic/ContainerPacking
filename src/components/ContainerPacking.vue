@@ -910,7 +910,7 @@ export default {
 }
 </script>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="scss">
+<style>
 .grid-content {
   min-height: 36px;
 }
