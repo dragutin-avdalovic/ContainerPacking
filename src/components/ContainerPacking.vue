@@ -57,7 +57,7 @@
         </el-col>
         <el-col class="row-bg-center">
           <span class="chooseContainer">Choose container to fill:</span>
-          <el-select id="choose-select" style="float: right;" v-model="container" multiple placeholder="Select container">
+          <el-select id="choose-select" style="float: right;" v-model="container"  v-on:change="showAllContainers" multiple placeholder="Select container">
             <el-option
               v-for="(item, index) in containers"
               :key="item.ID"
@@ -875,6 +875,14 @@ export default {
       arr[index2] = arr[index1]
       arr[index1] = temp
       return arr
+    },
+    showAllContainers () {
+        this.value = []
+        this.generateData()
+      _.forEach(this.arrayOfCanvases, (canvas, index) => {
+        canvas.style.display = 'block'
+        canvas.removeEventListener('click', this.handleEditCanvas, false)
+      })
     }
   }
 }
