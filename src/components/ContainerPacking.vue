@@ -877,8 +877,8 @@ export default {
       return arr
     },
     showAllContainers () {
-        this.value = []
-        this.generateData()
+      this.clearContainers()
+      this.containerForEdit = null
       _.forEach(this.arrayOfCanvases, (canvas, index) => {
         canvas.style.display = 'block'
         canvas.removeEventListener('click', this.handleEditCanvas, false)
