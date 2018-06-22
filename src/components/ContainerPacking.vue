@@ -306,6 +306,7 @@ export default {
       this.container = []
       this.value = []
       this.containerData = []
+      this.data = []
       this.loadingGetBoxesAndCont = true
       if (filename !== '' && type !== null) {
         axios.post('http://52.157.147.48:80/PackingAPI/api/v1/GetBoxesAndContainers?fileName=' + filename + '&typeofcont=' + type).then((response) => {
